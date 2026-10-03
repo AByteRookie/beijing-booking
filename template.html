@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>北京旅游景点预约入口汇总</title>
+<style>
+  :root{
+    --cream:#f7f3ea;
+    --cream-2:#efe7d8;
+    --paper:#fffdf8;
+    --ink:#23201c;
+    --ink-2:#5b5348;
+    --ink-3:#8a8071;
+    --red:#8e1f2b;
+    --red-2:#b3374a;
+    --blue:#1d3f6e;
+    --blue-2:#2c5c96;
+    --gold:#b08a3e;
+    --line:#ddd2be;
+    --line-2:#cabca2;
+    --ok:#2f7a4f;
+    --warn:#a8721a;
+    --danger:#a8323f;
+    --radius:12px;
+    --shadow:0 6px 22px rgba(60,44,26,.10);
+    --shadow-lg:0 18px 50px rgba(40,28,14,.26);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{
+    background:
+      radial-gradient(900px 420px at 8% -6%, #fbf6ec 0%, transparent 62%),
+      radial-gradient(760px 380px at 96% 0%, #f2ece0 0%, transparent 58%),
+      var(--cream);
+    color:var(--ink);
+    font-family:"PingFang SC","Microsoft YaHei","Hiragino Sans GB","Noto Sans SC",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:15px;line-height:1.6;min-height:100vh;
+  }
+  .wrap{max-width:1280px;margin:0 auto;padding:18px 14px 64px}
+
+  /* ================= 顶部 ================= */
+  header.top{padding:8px 2px 14px;border-bottom:2px solid var(--line-2);margin-bottom:14px}
+  .kicker{font-size:11.5px;letter-spacing:.22em;color:var(--gold);text-transform:uppercase;margin-bottom:7px;font-weight:700}
+  h1{margin:0 0 8px;font-size:clamp(20px,4.4vw,31px);letter-spacing:.6px;line-height:1.24;color:var(--red);font-weight:800}
+  h1 .seal{display:inline-block;background:var(--red);color:#fff;font-size:.46em;vertical-align:middle;
+    padding:3px 7px;border-radius:4px;letter-spacing:.14em;margin-left:8px;font-weight:700;transform:translateY(-2px)}
+  .sub{margin:0;color:var(--ink-2);font-size:13px;max-width:96ch}
+  .sub b{color:var(--red);font-weight:700}
+
+  /* ================= 统计面板 ================= */
+  .stats{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin:14px 0 12px}
+  .stat{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:9px 6px;text-align:center;
+    box-shadow:0 1px 3px rgba(60,44,26,.05)}
+  .stat .n{font-size:clamp(16px,3.2vw,23px);font-weight:800;display:block;letter-spacing:.4px;font-variant-numeric:tabular-nums}
+  .stat .l{font-size:11px;color:var(--ink-3);display:block;margin-top:1px}
+  .stat.s1 .n{color:var(--blue)}
+  .stat.s2 .n{color:var(--ok)}
+  .stat.s3 .n{color:var(--red)}
+  .stat.s4 .n{color:var(--gold)}
+  .stat.s5 .n{color:var(--danger)}
+  .stat.s6 .n{color:var(--blue-2)}
+
+  /* ================= 工具栏 ================= */
+  .toolbar{position:sticky;top:0;z-index:20;background:rgba(247,243,234,.94);backdrop-filter:blur(8px);
+    padding:10px 0 11px;border-bottom:1px solid var(--line);margin-bottom:12px}
+  .searchrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .searchbox{position:relative;flex:1 1 250px;min-width:0}
+  .searchbox svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);width:16px;height:16px;opacity:.45;pointer-events:none}
+  input[type=search]{width:100%;padding:10px 34px 10px 33px;border-radius:10px;border:1px solid var(--line-2);
+    background:var(--paper);color:var(--ink);font-size:14.5px;outline:none;font-family:inherit}
+  input[type=search]::placeholder{color:var(--ink-3)}
+  input[type=search]:focus{border-color:var(--blue-2);box-shadow:0 0 0 3px rgba(44,92,150,.13)}
+  .clearbtn{position:absolute;right:5px;top:50%;transform:translateY(-50%);border:0;background:transparent;
+    color:var(--ink-3);font-size:17px;cursor:pointer;padding:4px 8px;border-radius:7px;line-height:1}
+  .clearbtn:hover{color:var(--ink);background:var(--cream-2)}
+  .ghost{padding:10px 12px;border-radius:10px;border:1px solid var(--line-2);background:var(--paper);
+    color:var(--ink-2);font-size:12.5px;cursor:pointer;white-space:nowrap;font-family:inherit;font-weight:600}
+  .ghost:hover{border-color:var(--blue-2);color:var(--blue)}
+
+  .filters{display:flex;gap:6px;margin-top:9px;flex-wrap:wrap;align-items:center}
+  .filters .flabel{font-size:11.5px;color:var(--ink-3);margin-right:2px;font-weight:700}
+  .chip{padding:6px 12px;border-radius:999px;border:1px solid var(--line-2);background:var(--paper);
+    color:var(--ink-2);font-size:12.5px;cursor:pointer;white-space:nowrap;font-family:inherit;transition:.14s;font-weight:600}
+  .chip:hover{border-color:var(--blue-2);color:var(--blue)}
+  .chip.on{background:var(--blue);border-color:var(--blue);color:#fff}
+  .chip .c{opacity:.7;font-size:10.5px;margin-left:4px}
+
+  .resultbar{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:8px;
+    font-size:12px;color:var(--ink-3);flex-wrap:wrap}
+  .resultbar b{color:var(--red);font-size:13px}
+
+  /* ================= 三级窗口布局 ================= */
+  .layout{display:grid;grid-template-columns:212px minmax(0,1fr);gap:16px;align-items:start}
+  /* —— 一级窗口：分类导航 —— */
+  .catnav{position:sticky;top:118px;background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);
+    padding:10px;box-shadow:var(--shadow);min-width:0}
+  .catnav h2{font-size:12px;letter-spacing:.12em;color:var(--ink-3);margin:0 0 8px 4px;font-weight:800}
+  .catbtn{display:flex;align-items:center;gap:8px;width:100%;text-align:left;padding:9px 10px;margin-bottom:4px;
+    border-radius:9px;border:1px solid transparent;background:transparent;color:var(--ink-2);
+    font-size:13.5px;cursor:pointer;font-family:inherit;transition:.14s;font-weight:600}
+  .catbtn:hover{background:var(--cream-2)}
+  .catbtn.on{background:var(--red);color:#fff;border-color:var(--red)}
+  .catbtn .ic{font-size:15px;line-height:1;width:18px;text-align:center}
+  .catbtn .cnt{margin-left:auto;font-size:11px;opacity:.62;font-variant-numeric:tabular-nums}
+  .catnav .divider{height:1px;background:var(--line);margin:9px 2px}
+
+  /* —— 二级窗口：列表 —— */
+  main.main{min-width:0}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;min-width:0}
+  .card{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;
+    box-shadow:0 1px 3px rgba(60,44,26,.05);transition:box-shadow .16s,border-color .16s,transform .16s}
+  .card:hover{box-shadow:var(--shadow);border-color:var(--line-2)}
+  .card.open{border-color:var(--gold)}
+  .card.b-free{border-left:4px solid var(--ok)}
+  .card.b-verify{border-left:4px solid var(--warn)}
+  .card.b-mid{border-left:4px solid var(--blue-2)}
+
+  .head{display:flex;gap:10px;align-items:flex-start;padding:12px 13px 10px;cursor:pointer;user-select:none}
+  .head:focus-visible{outline:2px solid var(--blue-2);outline-offset:-2px;border-radius:10px}
+  .idx{flex:0 0 auto;width:25px;height:25px;border-radius:7px;background:var(--cream-2);color:var(--ink-2);
+    font-size:11.5px;display:flex;align-items:center;justify-content:center;font-variant-numeric:tabular-nums;font-weight:700}
+  .htext{flex:1;min-width:0}
+  .cname{font-size:15.5px;font-weight:700;letter-spacing:.2px;display:flex;align-items:baseline;gap:7px;flex-wrap:wrap}
+  .dist{font-size:11.5px;color:var(--ink-3);font-weight:600}
+  .tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px}
+  .tag{font-size:10.5px;padding:2px 7px;border-radius:5px;border:1px solid transparent;white-space:nowrap;font-weight:700}
+  .t-ch{background:#e8eef7;color:var(--blue);border-color:#cddcf0}
+  .t-need{background:#fbe9eb;color:var(--red);border-color:#f2ccd2}
+  .t-free{background:#e6f2ea;color:var(--ok);border-color:#c8e3d3}
+  .t-price{background:#f8f1e2;color:var(--warn);border-color:#ecdcc0}
+  .t-pop{background:#f3ecf7;color:#6b3f8e;border-color:#e3d5ee}
+  .t-dim{background:var(--cream-2);color:var(--ink-3);border-color:var(--line)}
+  .t-conf-h{background:#e6f2ea;color:var(--ok);border-color:#c8e3d3}
+  .t-conf-m{background:#f8f1e2;color:var(--warn);border-color:#ecdcc0}
+  .t-conf-l{background:#fbe9eb;color:var(--danger);border-color:#f2ccd2}
+  .chev{flex:0 0 auto;color:var(--ink-3);transition:transform .18s;font-size:11px;margin-top:5px}
+  .card.open .chev{transform:rotate(180deg)}
+
+  .brief{padding:0 13px 12px;display:none}
+  .card.open .brief{display:block;animation:fade .16s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:none}}
+  .kv{display:grid;grid-template-columns:60px 1fr;gap:8px;padding:6px 0;border-top:1px dashed var(--line);font-size:12.5px}
+  .kv:first-child{border-top:0}
+  .kv .k{color:var(--ink-3);font-weight:700;font-size:11.5px;padding-top:1px}
+  .kv .v{color:var(--ink);word-break:break-word}
+  .kv .v.rule{color:var(--ink-2)}
+  .go{display:inline-flex;align-items:center;gap:5px;margin-top:10px;padding:8px 13px;border-radius:9px;border:0;
+    background:var(--blue);color:#fff;font-size:12.5px;cursor:pointer;font-family:inherit;font-weight:700}
+  .go:hover{background:var(--blue-2)}
+  .go.red{background:var(--red)}
+  .go.red:hover{background:var(--red-2)}
+
+  .empty{grid-column:1/-1;text-align:center;padding:52px 16px;color:var(--ink-3)}
+  .empty .big{font-size:32px;display:block;margin-bottom:9px;opacity:.6}
+
+  /* ================= 三级窗口：详情抽屉 ================= */
+  .scrim{position:fixed;inset:0;background:rgba(35,25,14,.46);opacity:0;pointer-events:none;
+    transition:opacity .22s;z-index:60;backdrop-filter:blur(2px)}
+  .scrim.show{opacity:1;pointer-events:auto}
+  .drawer{position:fixed;top:0;right:0;height:100%;width:min(560px,94vw);background:var(--paper);
+    z-index:61;transform:translateX(102%);transition:transform .26s cubic-bezier(.4,0,.2,1);
+    display:flex;flex-direction:column;box-shadow:var(--shadow-lg)}
+  .drawer.show{transform:none}
+  .dhead{padding:16px 18px 13px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,#fffdf8,#f7f1e5)}
+  .dhead .dclose{position:absolute;right:12px;top:12px;border:0;background:var(--cream-2);color:var(--ink-2);
+    width:30px;height:30px;border-radius:8px;font-size:16px;cursor:pointer;line-height:1}
+  .dhead .dclose:hover{background:var(--line);color:var(--ink)}
+  .dname{font-size:19px;font-weight:800;color:var(--red);margin:0 34px 5px 0;line-height:1.3}
+  .dmeta{font-size:12px;color:var(--ink-3);margin-bottom:8px}
+  .dbody{padding:14px 18px 26px;overflow-y:auto;flex:1;-webkit-overflow-scrolling:touch}
+  .sec{margin-bottom:16px}
+  .sec h3{font-size:12px;letter-spacing:.1em;color:var(--gold);margin:0 0 7px;font-weight:800;
+    padding-bottom:5px;border-bottom:1px solid var(--line)}
+  .dr{display:grid;grid-template-columns:74px 1fr;gap:9px;padding:5px 0;font-size:13px}
+  .dr .k{color:var(--ink-3);font-weight:700;font-size:11.5px;padding-top:2px}
+  .dr .v{color:var(--ink);word-break:break-word;white-space:pre-wrap}
+  .dr .v.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12.5px}
+  .dr .v.warn{color:var(--warn)}
+  .dr .v.red{color:var(--danger)}
+  .acts{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}
+  .btn{display:inline-flex;align-items:center;gap:6px;padding:9px 13px;border-radius:9px;border:1px solid var(--line-2);
+    background:var(--paper);color:var(--ink);font-size:12.5px;text-decoration:none;cursor:pointer;
+    font-family:inherit;font-weight:700;transition:.14s}
+  .btn:hover{border-color:var(--blue-2);color:var(--blue)}
+  .btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}
+  .btn.primary:hover{background:var(--blue-2);color:#fff}
+  .btn.wx{background:#1f7a45;border-color:#1f7a45;color:#fff}
+  .btn.wx:hover{background:#2f7a4f;color:#fff}
+  .btn:active{transform:translateY(1px)}
+  .srcs{font-size:11.5px;color:var(--ink-3)}
+  .srcs a{color:var(--blue-2);text-decoration:none;border-bottom:1px dotted var(--blue-2);margin-right:9px;font-weight:600}
+  .srcs a:hover{color:var(--red)}
+
+  /* ================= 其他 ================= */
+  #toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,18px);background:var(--ink);color:#fdf9f1;
+    padding:10px 16px;border-radius:9px;font-size:13px;opacity:0;pointer-events:none;transition:.2s;
+    z-index:99;max-width:88vw;text-align:center;box-shadow:var(--shadow-lg)}
+  #toast.show{opacity:1;transform:translate(-50%,0)}
+  .totop{position:fixed;right:15px;bottom:18px;width:42px;height:42px;border-radius:50%;border:1px solid var(--line-2);
+    background:var(--paper);color:var(--ink-2);font-size:16px;cursor:pointer;display:none;align-items:center;
+    justify-content:center;z-index:40;box-shadow:var(--shadow);font-family:inherit}
+  .totop.show{display:flex}
+  .totop:hover{color:var(--red);border-color:var(--red)}
+
+  footer{margin-top:30px;padding:18px 18px;border:1px solid var(--line);border-radius:var(--radius);
+    background:var(--paper);font-size:12.5px;color:var(--ink-2);line-height:1.85;box-shadow:var(--shadow)}
+  footer h2{font-size:13.5px;margin:0 0 8px;color:var(--red);letter-spacing:.3px;font-weight:800}
+  footer h2:not(:first-child){margin-top:16px}
+  footer ul{margin:0;padding-left:18px}
+  footer li{margin-bottom:3px}
+  footer code{background:var(--cream-2);padding:1px 5px;border-radius:4px;font-size:11.5px;color:var(--blue)}
+  footer .warnline{color:var(--warn);font-weight:700}
+
+  /* ================= 响应式 ================= */
+  @media (max-width:940px){
+    .layout{grid-template-columns:minmax(0,1fr)}
+    .catnav{position:static;top:auto;overflow:hidden}
+    .catnav h2{margin-bottom:6px}
+    .catnav .catlist{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch;min-width:0}
+    .catnav .catlist::-webkit-scrollbar{height:5px}
+    .catnav .catlist::-webkit-scrollbar-thumb{background:var(--line-2);border-radius:3px}
+    .catbtn{width:auto;flex:0 0 auto;margin-bottom:0;white-space:nowrap}
+    .catnav .divider{display:none}
+    .stats{grid-template-columns:repeat(3,1fr)}
+  }
+  @media (max-width:640px){
+    .wrap{padding:14px 11px 52px;overflow-x:hidden}
+    .grid{grid-template-columns:minmax(0,1fr)}
+    .searchrow .ghost{flex:0 0 auto}
+    .searchbox{flex:1 1 100%}
+    .drawer{width:100%;height:88%;top:auto;bottom:0;border-radius:16px 16px 0 0;transform:translateY(102%)}
+    .drawer.show{transform:none}
+    .dbody{padding:13px 15px 30px}
+    .dhead{padding:14px 15px 11px}
+    .dv-handle{display:block}
+  }
+  .dv-handle{display:none;width:38px;height:4px;background:var(--line-2);border-radius:3px;margin:0 auto 10px}
+  @media (max-width:375px){
+    .stats{grid-template-columns:repeat(2,1fr)}
+    .btn{padding:8px 10px;font-size:12px}
+  }
+  @media print{
+    body{background:#fff}
+    .toolbar,.totop,#toast,.catnav,.scrim,.drawer{display:none!important}
+    .layout{grid-template-columns:1fr}
+    .card .brief{display:block!important}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="kicker">Beijing · Official Booking Channels</div>
+    <h1>北京旅游景点预约入口汇总<span class="seal">预约指南</span></h1>
+    <p class="sub">仅收录<b>景区官方</b>与<b>北京市政务/文旅官方</b>公布的预约购票入口（官方小程序 / 公众号 / 官网 / 官方票务平台）。<b>不含任何第三方代抢、黄牛或收费代理渠道。</b>点击卡片查看预约规则，点击「详情」打开完整入口路径与跳转按钮；小程序类渠道无法用网址直接唤起，本页提供「复制名称 → 微信搜索」替代方案。</p>
+  </header>
+
+  <section class="stats" id="stats" aria-label="统计面板"></section>
+
+  <div class="toolbar">
+    <div class="searchrow">
+      <div class="searchbox">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
+        <input id="q" type="search" placeholder="搜索景点名称 / 行政区 / 预约渠道（如：小程序、海淀区、免预约）" autocomplete="off" aria-label="搜索景点">
+        <button class="clearbtn" id="clearBtn" type="button" title="清空" aria-label="清空搜索">✕</button>
+      </div>
+      <button class="ghost" id="toggleAll" type="button">全部展开</button>
+      <button class="ghost" id="exportJson" type="button">导出 JSON</button>
+      <button class="ghost" id="exportCsv" type="button">导出 CSV</button>
+    </div>
+    <div class="filters" id="filters"></div>
+    <div class="resultbar">
+      <span>当前显示 <b id="shown">0</b> 个景点</span>
+      <span id="hint">提示：点击卡片展开规则摘要，「详情」按钮查看完整入口</span>
+    </div>
+  </div>
+
+  <div class="layout">
+    <!-- 一级窗口：分类导航 -->
+    <nav class="catnav" aria-label="分类导航">
+      <h2>一级分类</h2>
+      <div class="catlist" id="catnav"></div>
+    </nav>
+
+    <!-- 二级窗口：景点列表 -->
+    <main class="main">
+      <div class="grid" id="grid" aria-live="polite"></div>
+    </main>
+  </div>
+
+  <footer>
+    <h2>数据来源类型</h2>
+    <ul>
+      <li>各景区<b>官方网站「参观须知 / 预约须知 / 票务政策」页面</b>（第一优先来源，逐条可溯源）。</li>
+      <li><b>北京市人民政府门户网站（首都之窗 beijing.gov.cn）</b>及北京市文旅局「京通」景区购票服务平台公告。</li>
+      <li>北京市园林绿化局「畅游公园」平台（bjgyol.com.cn）与市属公园统一预约购票说明。</li>
+      <li>权威媒体对预约政策变动的报道（光明网、北京日报等），用于交叉印证。</li>
+      <li>每张卡片详情底部标注该条目的具体来源链接，可逐条核对。</li>
+    </ul>
+
+    <h2>分层信息质量说明</h2>
+    <ul>
+      <li><b>置信度「高」</b>：预约渠道、规则与价格来自景区官网或政务官网原文（如故宫、国博、中国科技馆、中国美术馆、首都博物馆、天坛公园、国家大剧院等）。</li>
+      <li><b>置信度「中」</b>：渠道来自官方发布或权威媒体，但具体价格 / 开放时间可能随季节调整。</li>
+      <li><b>置信度「低」</b>：公开渠道未能直接核对其官方预约页面，已标注<span class="warnline">「需核实」</span>，出行前请以景区官方渠道为准。</li>
+      <li>本页共 <b id="totalFoot">—</b> 个景点，其中标注「需核实」的条目表示<b>未能从官方页面确认</b>其预约入口或价格的完整信息，本页不对该类信息的完整性负责。</li>
+    </ul>
+
+    <h2>已记录的预约政策变动</h2>
+    <ul>
+      <li><b>首都博物馆</b>：自 2025 年 12 月 20 日起实施<b>免预约参观</b>，仅需携带身份证件现场登记入馆。</li>
+      <li><b>天坛公园</b>：2026 年 9 月起<b>非暑期取消预约限制</b>，可直接现场购票或线上提前购票；暑期（7/1–8/31）仍实名分时段预约。</li>
+      <li><b>北京市属景区</b>：北京市景区购票服务平台已入驻「京通」微信小程序 / APP，整合 74 家市属 5A、4A 级景区官方购票渠道，采用「统一入口 + 跳转景区」模式。</li>
+      <li><b>开放式街区</b>（南锣鼓巷、什刹海、前门大街·大栅栏、798 艺术区、首钢园）与<b>免费公园</b>（紫竹院、奥林匹克森林公园、大运河文化旅游景区）现为<b>免预约</b>。</li>
+    </ul>
+
+    <h2>免责声明</h2>
+    <ul>
+      <li>本页面为公开信息整理汇编，<b>非官方发布</b>，仅供出行参考，不构成任何旅游服务承诺。</li>
+      <li>景区预约与票价政策调整频繁（旺季 / 假期 / 重大活动期间尤甚），<b>出行前请以景区官方渠道当日公示为准</b>。</li>
+      <li>凡以「代抢名额、包进景区、内部渠道」名义收费的，<b>均非官方渠道</b>，请勿轻信；故宫、国博、中国科技馆、孔庙和国子监博物馆等均已官方声明确未授权第三方代理门票。</li>
+      <li>小程序与公众号无法通过网址直接唤起，需在微信内搜索对应名称；本页「复制名称」仅为便于搜索，<b>不收集任何个人信息</b>，页面不发起任何网络请求。</li>
+    </ul>
+
+    <h2>数据更新时间</h2>
+    <ul>
+      <li>采集与整理时间：<b id="buildTime">—</b></li>
+    </ul>
+  </footer>
+</div>
+
+<!-- 三级窗口：详情抽屉 -->
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="dname" aria-hidden="true">
+  <div class="dhead">
+    <div class="dv-handle"></div>
+    <button class="dclose" id="dclose" type="button" title="关闭" aria-label="关闭详情">✕</button>
+    <h2 class="dname" id="dname">—</h2>
+    <div class="dmeta" id="dmeta"></div>
+    <div class="tags" id="dtags"></div>
+  </div>
+  <div class="dbody" id="dbody"></div>
+</aside>
+
+<button class="totop" id="toTop" type="button" title="回到顶部" aria-label="回到顶部">↑</button>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+/* =========================================================
+   数据层
+   每条记录字段：
+     name 景点名称 / district 所在区域 / category 一级分类
+     tags 二级标签数组（含 免费|收费、需预约|免预约|需购票、热门|小众、
+                        亲子|文化|拍照|夜游、容易|一般|困难|需提前多日）
+     channelType 预约渠道类型 / channelName 预约渠道名称
+     entry 具体入口路径 / link 官方预约链接
+     hours 开放时间 / rules 预约规则摘要 / price 门票价格
+     difficulty 预约难度 / remark 备注
+     status 信息状态（已确认|需核实）/ confidence 置信度（高|中|低）
+     source 来源URL
+   ========================================================= */
+const PAYLOAD = /*__DATA__*/;
+const DATA = PAYLOAD.records;
+const CATEGORIES = PAYLOAD.categories;
+const BUILD_TIME = '2026-09-24';
+
+const CAT_ICON = {
+  '1-皇家园林与历史古迹':'🏯','2-博物馆与展览馆':'🏛','3-科技与艺术场馆':'🎨',
+  '4-公园与自然景观':'🌳','5-宗教寺庙与文化场所':'🕌','6-胡同街区与文创园区':'🏮',
+  '7-演出与夜游项目':'🎭'
+};
+/* 难度等级排序权重（用于“预约难度”筛选排序） */
+const DIFF_WEIGHT = {'容易':0,'一般':1,'困难':2,'需提前多日':3};
+
+/* ---------- 工具 ---------- */
+function esc(s){
+  return String(s == null ? '' : s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+function hostOf(u){ try{ return new URL(u).hostname.replace(/^www\./,''); }catch(e){ return '官网'; } }
+function isFree(r){ return r.tags.indexOf('免费') > -1; }
+function needBook(r){ return r.tags.indexOf('需预约') > -1 || r.tags.indexOf('需购票') > -1; }
+function isNoBook(r){ return r.tags.indexOf('免预约') > -1; }
+function norm(s){ return String(s == null ? '' : s).toLowerCase().replace(/\s+/g,''); }
+
+/* 一级分类简称（去掉 "1-" 之类前缀） */
+function catShort(c){ return c.replace(/^\d+-/,''); }
+
+/* ---------- 统计 ---------- */
+const S = {
+  total: DATA.length,
+  confirmed: DATA.filter(r => r.status === '已确认').length,
+  need: DATA.filter(needBook).length,
+  nobook: DATA.filter(isNoBook).length,
+  verify: DATA.filter(r => r.status === '需核实').length,
+  free: DATA.filter(isFree).length
+};
+function renderStats(){
+  const items = [
+    ['s1', S.total,     '共收录景点'],
+    ['s2', S.confirmed, '已确认'],
+    ['s3', S.need,      '需预约/购票'],
+    ['s4', S.nobook,    '免预约'],
+    ['s5', S.verify,    '需核实'],
+    ['s6', S.free,      '免费景点']
+  ];
+  document.getElementById('stats').innerHTML = items.map(function(it){
+    return '<div class="stat '+it[0]+'"><span class="n">'+it[1]+'</span><span class="l">'+it[2]+'</span></div>';
+  }).join('');
+  document.getElementById('buildTime').textContent = BUILD_TIME;
+  document.getElementById('totalFoot').textContent = S.total;
+}
+
+/* ---------- 一级分类导航 ---------- */
+let activeCat = 'all';
+function renderCatNav(){
+  const counts = {};
+  DATA.forEach(function(r){ counts[r.category] = (counts[r.category]||0)+1; });
+  const html = ['<button class="catbtn'+(activeCat==='all'?' on':'')+'" type="button" data-cat="all">'
+      + '<span class="ic">📚</span>全部景点<span class="cnt">'+DATA.length+'</span></button>']
+    .concat(CATEGORIES.map(function(c){
+      return '<button class="catbtn'+(activeCat===c?' on':'')+'" type="button" data-cat="'+esc(c)+'">'
+        + '<span class="ic">'+(CAT_ICON[c]||'•')+'</span>'+esc(catShort(c))
+        + '<span class="cnt">'+(counts[c]||0)+'</span></button>';
+    })).join('');
+  document.getElementById('catnav').innerHTML = html;
+}
+
+/* ---------- 二级标签筛选 ---------- */
+const FILTER_DEFS = [
+  {id:'all',   label:'全部',       test:function(){ return true; }},
+  {id:'need',  label:'需预约/购票', test:needBook},
+  {id:'nobook',label:'免预约',     test:isNoBook},
+  {id:'free',  label:'免费',       test:isFree},
+  {id:'paid',  label:'收费',       test:function(r){ return r.tags.indexOf('收费')>-1; }},
+  {id:'热门',  label:'热门',       test:function(r){ return r.tags.indexOf('热门')>-1; }},
+  {id:'亲子',  label:'亲子',       test:function(r){ return r.tags.indexOf('亲子')>-1; }},
+  {id:'文化',  label:'文化',       test:function(r){ return r.tags.indexOf('文化')>-1; }},
+  {id:'夜游',  label:'夜游',       test:function(r){ return r.tags.indexOf('夜游')>-1; }},
+  {id:'拍照',  label:'拍照',       test:function(r){ return r.tags.indexOf('拍照')>-1; }},
+  {id:'hard',  label:'预约困难',   test:function(r){ return r.difficulty==='困难'||r.difficulty==='需提前多日'; }},
+  {id:'easy',  label:'预约容易',   test:function(r){ return r.difficulty==='容易'; }},
+  {id:'verify',label:'需核实',     test:function(r){ return r.status==='需核实'; }}
+];
+let activeFilter = 'all';
+
+function filterCount(def){
+  if(def.id === 'all') return DATA.length;
+  return DATA.filter(function(r){ return def.test(r); }).length;
+}
+function renderFilters(){
+  document.getElementById('filters').innerHTML =
+    '<span class="flabel">快捷筛选</span>' + FILTER_DEFS.map(function(f){
+      const n = filterCount(f);
+      return '<button class="chip'+(activeFilter===f.id?' on':'')+'" type="button" data-f="'+f.id+'">'
+        + esc(f.label) + '<span class="c">'+n+'</span></button>';
+    }).join('');
+}
+function matchFilter(r){
+  if(activeFilter === 'all') return true;
+  const def = FILTER_DEFS.filter(function(f){ return f.id === activeFilter; })[0];
+  return def ? def.test(r) : true;
+}
+
+/* ---------- 搜索（支持空格分隔的多关键词 AND） ---------- */
+function matchQuery(r, q){
+  if(!q) return true;
+  const hay = norm([r.name, r.district, r.category, r.tags.join(' '), r.channelType,
+    r.channelName, r.entry, r.rules, r.price, r.hours, r.remark, r.status, r.confidence,
+    r.difficulty].join(' '));
+  return q.split(/\s+/).filter(Boolean).every(function(k){ return hay.indexOf(norm(k)) > -1; });
+}
+
+/* ---------- 卡片标签 ---------- */
+function tagHTML(r){
+  const out = [];
+  out.push('<span class="tag t-ch">'+esc(r.channelType)+'</span>');
+  if(isNoBook(r)) out.push('<span class="tag t-free">免预约</span>');
+  else if(needBook(r)) out.push('<span class="tag t-need">'+(r.tags.indexOf('需购票')>-1?'需购票':'需预约')+'</span>');
+  if(isFree(r)) out.push('<span class="tag t-free">免费</span>');
+  else if(r.tags.indexOf('收费')>-1) out.push('<span class="tag t-price">收费</span>');
+  if(r.tags.indexOf('热门')>-1) out.push('<span class="tag t-pop">热门</span>');
+  if(r.tags.indexOf('小众')>-1) out.push('<span class="tag t-dim">小众</span>');
+  const cc = r.confidence==='高'?'t-conf-h':(r.confidence==='中'?'t-conf-m':'t-conf-l');
+  out.push('<span class="tag '+cc+'">置信度 '+esc(r.confidence)+'</span>');
+  if(r.status==='需核实') out.push('<span class="tag t-conf-m">需核实</span>');
+  return out.join('');
+}
+function cardClass(r){
+  if(r.status==='需核实') return 'b-verify';
+  if(isFree(r) && isNoBook(r)) return 'b-free';
+  return 'b-mid';
+}
+
+/* ---------- 卡片渲染（二级窗口） ---------- */
+function cardHTML(r){
+  return ''
+  + '<article class="card '+cardClass(r)+'" data-no="'+r.no+'" id="card-'+r.no+'">'
+  +   '<div class="head" role="button" tabindex="0" aria-expanded="false">'
+  +     '<span class="idx">'+r.no+'</span>'
+  +     '<div class="htext">'
+  +       '<div class="cname">'+esc(r.name)+'<span class="dist">'+esc(r.district)+'</span></div>'
+  +       '<div class="tags">'+tagHTML(r)+'</div>'
+  +     '</div>'
+  +     '<span class="chev">▼</span>'
+  +   '</div>'
+  +   '<div class="brief">'
+  +     '<div class="kv"><span class="k">预约渠道</span><span class="v">'+esc(r.channelName)+'</span></div>'
+  +     '<div class="kv"><span class="k">开放时间</span><span class="v">'+esc(r.hours)+'</span></div>'
+  +     '<div class="kv"><span class="k">门票价格</span><span class="v">'+esc(r.price)+'</span></div>'
+  +     '<div class="kv"><span class="k">规则摘要</span><span class="v rule">'+esc(r.rules)+'</span></div>'
+  +     '<button class="go red" type="button" data-detail="'+r.no+'">查看完整入口与详情 →</button>'
+  +   '</div>'
+  + '</article>';
+}
+
+/* ---------- 列表渲染 ---------- */
+const grid = document.getElementById('grid');
+const qInput = document.getElementById('q');
+function currentList(){
+  const q = qInput.value.trim();
+  return DATA.filter(function(r){
+    return (activeCat==='all' || r.category===activeCat) && matchFilter(r) && matchQuery(r, q);
+  });
+}
+function render(){
+  const list = currentList();
+  grid.innerHTML = list.length
+    ? list.map(cardHTML).join('')
+    : '<div class="empty"><span class="big">🔍</span>没有匹配的景点<br>试试更换关键词、切换一级分类或清除筛选条件</div>';
+  document.getElementById('shown').textContent = list.length;
+  const parts = [];
+  if(activeCat !== 'all') parts.push('分类：'+catShort(activeCat));
+  const fd = FILTER_DEFS.filter(function(f){ return f.id===activeFilter; })[0];
+  if(activeFilter !== 'all' && fd) parts.push('筛选：'+fd.label);
+  if(qInput.value.trim()) parts.push('关键词："'+qInput.value.trim()+'"');
+  document.getElementById('hint').textContent = parts.length
+    ? '已过滤 · ' + parts.join(' · ') + ' · 点击「全部景点」可恢复'
+    : '提示：点击卡片展开规则摘要，「详情」按钮查看完整入口';
+}
+
+/* ---------- 三级窗口：详情抽屉 ---------- */
+const drawer = document.getElementById('drawer');
+const scrim = document.getElementById('scrim');
+let lastFocus = null;
+
+function openDetail(no){
+  const r = DATA.filter(function(x){ return x.no === no; })[0];
+  if(!r) return;
+  lastFocus = document.activeElement;
+
+  document.getElementById('dname').textContent = r.name;
+  document.getElementById('dmeta').textContent = r.district + ' · ' + catShort(r.category)
+    + ' · 预约难度：' + r.difficulty + ' · 信息状态：' + r.status + ' · 置信度：' + r.confidence;
+  document.getElementById('dtags').innerHTML = tagHTML(r);
+
+  /* 跳转与复制按钮 */
+  const btns = [];
+  r.links.forEach(function(u, i){
+    btns.push('<a class="btn '+(i===0?'primary':'')+'" href="'+esc(u)+'" target="_blank" rel="noopener noreferrer">'
+      + '🔗 '+(i===0?'打开官方预约入口':'备用官方链接')
+      + '<span style="opacity:.78;font-size:11px">· '+esc(hostOf(u))+'</span></a>');
+  });
+  const isWechat = r.channelType.indexOf('小程序') > -1 || r.channelType.indexOf('公众号') > -1;
+  if(isWechat && r.channelName && r.channelName !== '—'){
+    /* 从渠道名称中提取第一个被引号包裹的名称作为最可能的可搜索名称 */
+    const m = r.channelName.match(/[“"]([^”"]+)[”"]/);
+    const searchName = m ? m[1] : r.channelName.split(/[\/、；;]/)[0].replace(/官方|微信|公众号|小程序|渠道|预约/g,'').trim() || r.channelName;
+    btns.push('<button class="btn wx" type="button" data-copy="'+esc(searchName)+'">'
+      + '📋 复制「'+esc(searchName)+'」→ 微信搜索</button>');
+    btns.push('<button class="btn" type="button" data-copy="'+esc(r.channelName)+'">📋 复制完整渠道名称</button>');
+  }
+  if(!r.links.length){
+    btns.push('<button class="btn" type="button" data-copy="'+esc(r.name+' 预约')+'">📋 复制「'+esc(r.name)+' 预约」→ 微信搜索</button>');
+  }
+
+  const srcs = r.sources.map(function(u, i){
+    return '<a href="'+esc(u)+'" target="_blank" rel="noopener noreferrer">来源'+(i+1)+' · '+esc(hostOf(u))+'</a>';
+  }).join('');
+
+  document.getElementById('dbody').innerHTML = ''
+  + '<div class="sec"><h3>预约入口</h3>'
+  +   '<div class="dr"><span class="k">渠道类型</span><span class="v">'+esc(r.channelType)+'</span></div>'
+  +   '<div class="dr"><span class="k">渠道名称</span><span class="v">'+esc(r.channelName)+'</span></div>'
+  +   '<div class="dr"><span class="k">入口路径</span><span class="v mono">'+esc(r.entry)+'</span></div>'
+  +   '<div class="acts">'+btns.join('')+'</div>'
+  + '</div>'
+  + '<div class="sec"><h3>参观与预约规则</h3>'
+  +   '<div class="dr"><span class="k">开放时间</span><span class="v">'+esc(r.hours)+'</span></div>'
+  +   '<div class="dr"><span class="k">门票价格</span><span class="v">'+esc(r.price)+'</span></div>'
+  +   '<div class="dr"><span class="k">预约规则</span><span class="v">'+esc(r.rules)+'</span></div>'
+  +   '<div class="dr"><span class="k">预约难度</span><span class="v">'+esc(r.difficulty)+'</span></div>'
+  + '</div>'
+  + '<div class="sec"><h3>信息状态与备注</h3>'
+  +   '<div class="dr"><span class="k">信息状态</span><span class="v'+(r.status==='需核实'?' warn':'')+'">'+esc(r.status)+'</span></div>'
+  +   '<div class="dr"><span class="k">置信度</span><span class="v'+(r.confidence==='高'?'':' warn')+'">'+esc(r.confidence)+'</span></div>'
+  +   '<div class="dr"><span class="k">备注</span><span class="v'+(r.status==='需核实'?' warn':'')+'">'+esc(r.remark)+'</span></div>'
+  + '</div>'
+  + '<div class="sec"><h3>来源链接（可溯源）</h3>'
+  +   '<div class="srcs">'+(srcs || '公开渠道未获取到官方页面链接，已标注“需核实”。')+'</div>'
+  + '</div>';
+
+  drawer.classList.add('show');
+  drawer.setAttribute('aria-hidden','false');
+  scrim.classList.add('show');
+  document.body.style.overflow = 'hidden';
+  drawer.querySelector('.dclose').focus();
+}
+function closeDetail(){
+  drawer.classList.remove('show');
+  drawer.setAttribute('aria-hidden','true');
+  scrim.classList.remove('show');
+  document.body.style.overflow = '';
+  if(lastFocus && lastFocus.focus) lastFocus.focus();
+}
+
+/* ---------- 复制 ---------- */
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toast._timer);
+  toast._timer = setTimeout(function(){ t.classList.remove('show'); }, 2600);
+}
+function copyText(text){
+  const done = function(){ toast('已复制：' + text + '　→ 请到微信「搜一搜」粘贴搜索'); };
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(done).catch(function(){ legacyCopy(text, done); });
+  }else{
+    legacyCopy(text, done);
+  }
+}
+function legacyCopy(text, done){
+  try{
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.setAttribute('readonly','');
+    ta.style.position = 'fixed';
+    ta.style.top = '-1000px';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    done();
+  }catch(err){
+    toast('复制失败，请手动输入：' + text);
+  }
+}
+
+/* ---------- 导出 ---------- */
+function download(name, text, mime){
+  const blob = new Blob(['\ufeff' + text], {type: mime});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = name;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(function(){ URL.revokeObjectURL(a.href); }, 1500);
+  toast('已导出 ' + name);
+}
+document.getElementById('exportJson').addEventListener('click', function(){
+  download('北京景点预约入口.json', JSON.stringify(DATA, null, 2), 'application/json;charset=utf-8');
+});
+document.getElementById('exportCsv').addEventListener('click', function(){
+  const cols = ['name','district','category','tags','channelType','channelName','entry',
+    'link','hours','rules','price','difficulty','remark','status','confidence','source'];
+  const head = ['景点名称','所在区域','一级分类','二级标签','渠道类型','渠道名称','入口路径',
+    '官方链接','开放时间','预约规则摘要','门票价格','预约难度','备注','信息状态','置信度','来源URL'];
+  const cell = function(v){ return '"' + String(v==null?'':v).replace(/"/g,'""') + '"'; };
+  const lines = [head.map(cell).join(',')];
+  DATA.forEach(function(r){
+    lines.push(cols.map(function(c){
+      return cell(c === 'tags' ? r.tags.join('|') : r[c]);
+    }).join(','));
+  });
+  download('北京景点预约入口.csv', lines.join('\r\n'), 'text/csv;charset=utf-8');
+});
+
+/* ---------- 事件绑定 ---------- */
+// 卡片展开 / 详情按钮（事件委托）
+grid.addEventListener('click', function(e){
+  const db = e.target.closest('[data-detail]');
+  if(db){ e.stopPropagation(); openDetail(Number(db.getAttribute('data-detail'))); return; }
+  const head = e.target.closest('.head');
+  if(head){
+    const card = head.closest('.card');
+    const open = card.classList.toggle('open');
+    head.setAttribute('aria-expanded', open ? 'true' : 'false');
+  }
+});
+grid.addEventListener('keydown', function(e){
+  if(e.key !== 'Enter' && e.key !== ' ') return;
+  const head = e.target.closest('.head');
+  if(!head) return;
+  e.preventDefault();
+  head.click();
+});
+// 详情内复制
+drawer.addEventListener('click', function(e){
+  const cb = e.target.closest('[data-copy]');
+  if(cb){ copyText(cb.getAttribute('data-copy')); return; }
+  if(e.target.closest('#dclose')) closeDetail();
+});
+scrim.addEventListener('click', closeDetail);
+document.addEventListener('keydown', function(e){
+  if(e.key === 'Escape' && drawer.classList.contains('show')) closeDetail();
+});
+// 一级分类
+document.getElementById('catnav').addEventListener('click', function(e){
+  const b = e.target.closest('.catbtn');
+  if(!b) return;
+  activeCat = b.getAttribute('data-cat');
+  renderCatNav();
+  render();
+  window.scrollTo({top:0, behavior:'smooth'});
+});
+// 二级标签筛选
+document.getElementById('filters').addEventListener('click', function(e){
+  const c = e.target.closest('.chip');
+  if(!c) return;
+  activeFilter = c.getAttribute('data-f');
+  renderFilters();
+  render();
+});
+// 搜索
+let debTimer = null;
+qInput.addEventListener('input', function(){
+  clearTimeout(debTimer);
+  debTimer = setTimeout(render, 90);
+});
+qInput.addEventListener('keydown', function(e){
+  if(e.key === 'Escape'){ qInput.value = ''; render(); }
+});
+document.getElementById('clearBtn').addEventListener('click', function(){
+  qInput.value = ''; qInput.focus(); render();
+});
+// 全部展开 / 折叠
+let allOpen = false;
+document.getElementById('toggleAll').addEventListener('click', function(e){
+  allOpen = !allOpen;
+  Array.prototype.forEach.call(document.querySelectorAll('.card'), function(c){
+    c.classList.toggle('open', allOpen);
+    const h = c.querySelector('.head');
+    if(h) h.setAttribute('aria-expanded', allOpen ? 'true' : 'false');
+  });
+  e.currentTarget.textContent = allOpen ? '全部折叠' : '全部展开';
+});
+// 回到顶部
+const toTop = document.getElementById('toTop');
+window.addEventListener('scroll', function(){
+  toTop.classList.toggle('show', window.scrollY > 480);
+}, {passive:true});
+toTop.addEventListener('click', function(){ window.scrollTo({top:0, behavior:'smooth'}); });
+
+/* ---------- 启动 ---------- */
+renderStats();
+renderCatNav();
+renderFilters();
+render();
+</script>
+</body>
+</html>

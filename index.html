@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>北京旅游景点预约入口汇总</title>
+<style>
+  :root{
+    --cream:#f7f3ea;
+    --cream-2:#efe7d8;
+    --paper:#fffdf8;
+    --ink:#23201c;
+    --ink-2:#5b5348;
+    --ink-3:#8a8071;
+    --red:#8e1f2b;
+    --red-2:#b3374a;
+    --blue:#1d3f6e;
+    --blue-2:#2c5c96;
+    --gold:#b08a3e;
+    --line:#ddd2be;
+    --line-2:#cabca2;
+    --ok:#2f7a4f;
+    --warn:#a8721a;
+    --danger:#a8323f;
+    --radius:12px;
+    --shadow:0 6px 22px rgba(60,44,26,.10);
+    --shadow-lg:0 18px 50px rgba(40,28,14,.26);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{
+    background:
+      radial-gradient(900px 420px at 8% -6%, #fbf6ec 0%, transparent 62%),
+      radial-gradient(760px 380px at 96% 0%, #f2ece0 0%, transparent 58%),
+      var(--cream);
+    color:var(--ink);
+    font-family:"PingFang SC","Microsoft YaHei","Hiragino Sans GB","Noto Sans SC",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:15px;line-height:1.6;min-height:100vh;
+  }
+  .wrap{max-width:1280px;margin:0 auto;padding:18px 14px 64px}
+
+  /* ================= 顶部 ================= */
+  header.top{padding:8px 2px 14px;border-bottom:2px solid var(--line-2);margin-bottom:14px}
+  .kicker{font-size:11.5px;letter-spacing:.22em;color:var(--gold);text-transform:uppercase;margin-bottom:7px;font-weight:700}
+  h1{margin:0 0 8px;font-size:clamp(20px,4.4vw,31px);letter-spacing:.6px;line-height:1.24;color:var(--red);font-weight:800}
+  h1 .seal{display:inline-block;background:var(--red);color:#fff;font-size:.46em;vertical-align:middle;
+    padding:3px 7px;border-radius:4px;letter-spacing:.14em;margin-left:8px;font-weight:700;transform:translateY(-2px)}
+  .sub{margin:0;color:var(--ink-2);font-size:13px;max-width:96ch}
+  .sub b{color:var(--red);font-weight:700}
+
+  /* ================= 统计面板 ================= */
+  .stats{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin:14px 0 12px}
+  .stat{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:9px 6px;text-align:center;
+    box-shadow:0 1px 3px rgba(60,44,26,.05)}
+  .stat .n{font-size:clamp(16px,3.2vw,23px);font-weight:800;display:block;letter-spacing:.4px;font-variant-numeric:tabular-nums}
+  .stat .l{font-size:11px;color:var(--ink-3);display:block;margin-top:1px}
+  .stat.s1 .n{color:var(--blue)}
+  .stat.s2 .n{color:var(--ok)}
+  .stat.s3 .n{color:var(--red)}
+  .stat.s4 .n{color:var(--gold)}
+  .stat.s5 .n{color:var(--danger)}
+  .stat.s6 .n{color:var(--blue-2)}
+
+  /* ================= 工具栏 ================= */
+  .toolbar{position:sticky;top:0;z-index:20;background:rgba(247,243,234,.94);backdrop-filter:blur(8px);
+    padding:10px 0 11px;border-bottom:1px solid var(--line);margin-bottom:12px}
+  .searchrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .searchbox{position:relative;flex:1 1 250px;min-width:0}
+  .searchbox svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);width:16px;height:16px;opacity:.45;pointer-events:none}
+  input[type=search]{width:100%;padding:10px 34px 10px 33px;border-radius:10px;border:1px solid var(--line-2);
+    background:var(--paper);color:var(--ink);font-size:14.5px;outline:none;font-family:inherit}
+  input[type=search]::placeholder{color:var(--ink-3)}
+  input[type=search]:focus{border-color:var(--blue-2);box-shadow:0 0 0 3px rgba(44,92,150,.13)}
+  .clearbtn{position:absolute;right:5px;top:50%;transform:translateY(-50%);border:0;background:transparent;
+    color:var(--ink-3);font-size:17px;cursor:pointer;padding:4px 8px;border-radius:7px;line-height:1}
+  .clearbtn:hover{color:var(--ink);background:var(--cream-2)}
+  .ghost{padding:10px 12px;border-radius:10px;border:1px solid var(--line-2);background:var(--paper);
+    color:var(--ink-2);font-size:12.5px;cursor:pointer;white-space:nowrap;font-family:inherit;font-weight:600}
+  .ghost:hover{border-color:var(--blue-2);color:var(--blue)}
+
+  .filters{display:flex;gap:6px;margin-top:9px;flex-wrap:wrap;align-items:center}
+  .filters .flabel{font-size:11.5px;color:var(--ink-3);margin-right:2px;font-weight:700}
+  .chip{padding:6px 12px;border-radius:999px;border:1px solid var(--line-2);background:var(--paper);
+    color:var(--ink-2);font-size:12.5px;cursor:pointer;white-space:nowrap;font-family:inherit;transition:.14s;font-weight:600}
+  .chip:hover{border-color:var(--blue-2);color:var(--blue)}
+  .chip.on{background:var(--blue);border-color:var(--blue);color:#fff}
+  .chip .c{opacity:.7;font-size:10.5px;margin-left:4px}
+
+  .resultbar{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:8px;
+    font-size:12px;color:var(--ink-3);flex-wrap:wrap}
+  .resultbar b{color:var(--red);font-size:13px}
+
+  /* ================= 三级窗口布局 ================= */
+  .layout{display:grid;grid-template-columns:212px minmax(0,1fr);gap:16px;align-items:start}
+  /* —— 一级窗口：分类导航 —— */
+  .catnav{position:sticky;top:118px;background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);
+    padding:10px;box-shadow:var(--shadow);min-width:0}
+  .catnav h2{font-size:12px;letter-spacing:.12em;color:var(--ink-3);margin:0 0 8px 4px;font-weight:800}
+  .catbtn{display:flex;align-items:center;gap:8px;width:100%;text-align:left;padding:9px 10px;margin-bottom:4px;
+    border-radius:9px;border:1px solid transparent;background:transparent;color:var(--ink-2);
+    font-size:13.5px;cursor:pointer;font-family:inherit;transition:.14s;font-weight:600}
+  .catbtn:hover{background:var(--cream-2)}
+  .catbtn.on{background:var(--red);color:#fff;border-color:var(--red)}
+  .catbtn .ic{font-size:15px;line-height:1;width:18px;text-align:center}
+  .catbtn .cnt{margin-left:auto;font-size:11px;opacity:.62;font-variant-numeric:tabular-nums}
+  .catnav .divider{height:1px;background:var(--line);margin:9px 2px}
+
+  /* —— 二级窗口：列表 —— */
+  main.main{min-width:0}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;min-width:0}
+  .card{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;
+    box-shadow:0 1px 3px rgba(60,44,26,.05);transition:box-shadow .16s,border-color .16s,transform .16s}
+  .card:hover{box-shadow:var(--shadow);border-color:var(--line-2)}
+  .card.open{border-color:var(--gold)}
+  .card.b-free{border-left:4px solid var(--ok)}
+  .card.b-verify{border-left:4px solid var(--warn)}
+  .card.b-mid{border-left:4px solid var(--blue-2)}
+
+  .head{display:flex;gap:10px;align-items:flex-start;padding:12px 13px 10px;cursor:pointer;user-select:none}
+  .head:focus-visible{outline:2px solid var(--blue-2);outline-offset:-2px;border-radius:10px}
+  .idx{flex:0 0 auto;width:25px;height:25px;border-radius:7px;background:var(--cream-2);color:var(--ink-2);
+    font-size:11.5px;display:flex;align-items:center;justify-content:center;font-variant-numeric:tabular-nums;font-weight:700}
+  .htext{flex:1;min-width:0}
+  .cname{font-size:15.5px;font-weight:700;letter-spacing:.2px;display:flex;align-items:baseline;gap:7px;flex-wrap:wrap}
+  .dist{font-size:11.5px;color:var(--ink-3);font-weight:600}
+  .tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px}
+  .tag{font-size:10.5px;padding:2px 7px;border-radius:5px;border:1px solid transparent;white-space:nowrap;font-weight:700}
+  .t-ch{background:#e8eef7;color:var(--blue);border-color:#cddcf0}
+  .t-need{background:#fbe9eb;color:var(--red);border-color:#f2ccd2}
+  .t-free{background:#e6f2ea;color:var(--ok);border-color:#c8e3d3}
+  .t-price{background:#f8f1e2;color:var(--warn);border-color:#ecdcc0}
+  .t-pop{background:#f3ecf7;color:#6b3f8e;border-color:#e3d5ee}
+  .t-dim{background:var(--cream-2);color:var(--ink-3);border-color:var(--line)}
+  .t-conf-h{background:#e6f2ea;color:var(--ok);border-color:#c8e3d3}
+  .t-conf-m{background:#f8f1e2;color:var(--warn);border-color:#ecdcc0}
+  .t-conf-l{background:#fbe9eb;color:var(--danger);border-color:#f2ccd2}
+  .chev{flex:0 0 auto;color:var(--ink-3);transition:transform .18s;font-size:11px;margin-top:5px}
+  .card.open .chev{transform:rotate(180deg)}
+
+  .brief{padding:0 13px 12px;display:none}
+  .card.open .brief{display:block;animation:fade .16s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:none}}
+  .kv{display:grid;grid-template-columns:60px 1fr;gap:8px;padding:6px 0;border-top:1px dashed var(--line);font-size:12.5px}
+  .kv:first-child{border-top:0}
+  .kv .k{color:var(--ink-3);font-weight:700;font-size:11.5px;padding-top:1px}
+  .kv .v{color:var(--ink);word-break:break-word}
+  .kv .v.rule{color:var(--ink-2)}
+  .go{display:inline-flex;align-items:center;gap:5px;margin-top:10px;padding:8px 13px;border-radius:9px;border:0;
+    background:var(--blue);color:#fff;font-size:12.5px;cursor:pointer;font-family:inherit;font-weight:700}
+  .go:hover{background:var(--blue-2)}
+  .go.red{background:var(--red)}
+  .go.red:hover{background:var(--red-2)}
+
+  .empty{grid-column:1/-1;text-align:center;padding:52px 16px;color:var(--ink-3)}
+  .empty .big{font-size:32px;display:block;margin-bottom:9px;opacity:.6}
+
+  /* ================= 三级窗口：详情抽屉 ================= */
+  .scrim{position:fixed;inset:0;background:rgba(35,25,14,.46);opacity:0;pointer-events:none;
+    transition:opacity .22s;z-index:60;backdrop-filter:blur(2px)}
+  .scrim.show{opacity:1;pointer-events:auto}
+  .drawer{position:fixed;top:0;right:0;height:100%;width:min(560px,94vw);background:var(--paper);
+    z-index:61;transform:translateX(102%);transition:transform .26s cubic-bezier(.4,0,.2,1);
+    display:flex;flex-direction:column;box-shadow:var(--shadow-lg)}
+  .drawer.show{transform:none}
+  .dhead{padding:16px 18px 13px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,#fffdf8,#f7f1e5)}
+  .dhead .dclose{position:absolute;right:12px;top:12px;border:0;background:var(--cream-2);color:var(--ink-2);
+    width:30px;height:30px;border-radius:8px;font-size:16px;cursor:pointer;line-height:1}
+  .dhead .dclose:hover{background:var(--line);color:var(--ink)}
+  .dname{font-size:19px;font-weight:800;color:var(--red);margin:0 34px 5px 0;line-height:1.3}
+  .dmeta{font-size:12px;color:var(--ink-3);margin-bottom:8px}
+  .dbody{padding:14px 18px 26px;overflow-y:auto;flex:1;-webkit-overflow-scrolling:touch}
+  .sec{margin-bottom:16px}
+  .sec h3{font-size:12px;letter-spacing:.1em;color:var(--gold);margin:0 0 7px;font-weight:800;
+    padding-bottom:5px;border-bottom:1px solid var(--line)}
+  .dr{display:grid;grid-template-columns:74px 1fr;gap:9px;padding:5px 0;font-size:13px}
+  .dr .k{color:var(--ink-3);font-weight:700;font-size:11.5px;padding-top:2px}
+  .dr .v{color:var(--ink);word-break:break-word;white-space:pre-wrap}
+  .dr .v.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12.5px}
+  .dr .v.warn{color:var(--warn)}
+  .dr .v.red{color:var(--danger)}
+  .acts{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}
+  .btn{display:inline-flex;align-items:center;gap:6px;padding:9px 13px;border-radius:9px;border:1px solid var(--line-2);
+    background:var(--paper);color:var(--ink);font-size:12.5px;text-decoration:none;cursor:pointer;
+    font-family:inherit;font-weight:700;transition:.14s}
+  .btn:hover{border-color:var(--blue-2);color:var(--blue)}
+  .btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}
+  .btn.primary:hover{background:var(--blue-2);color:#fff}
+  .btn.wx{background:#1f7a45;border-color:#1f7a45;color:#fff}
+  .btn.wx:hover{background:#2f7a4f;color:#fff}
+  .btn:active{transform:translateY(1px)}
+  .srcs{font-size:11.5px;color:var(--ink-3)}
+  .srcs a{color:var(--blue-2);text-decoration:none;border-bottom:1px dotted var(--blue-2);margin-right:9px;font-weight:600}
+  .srcs a:hover{color:var(--red)}
+
+  /* ================= 其他 ================= */
+  #toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,18px);background:var(--ink);color:#fdf9f1;
+    padding:10px 16px;border-radius:9px;font-size:13px;opacity:0;pointer-events:none;transition:.2s;
+    z-index:99;max-width:88vw;text-align:center;box-shadow:var(--shadow-lg)}
+  #toast.show{opacity:1;transform:translate(-50%,0)}
+  .totop{position:fixed;right:15px;bottom:18px;width:42px;height:42px;border-radius:50%;border:1px solid var(--line-2);
+    background:var(--paper);color:var(--ink-2);font-size:16px;cursor:pointer;display:none;align-items:center;
+    justify-content:center;z-index:40;box-shadow:var(--shadow);font-family:inherit}
+  .totop.show{display:flex}
+  .totop:hover{color:var(--red);border-color:var(--red)}
+
+  footer{margin-top:30px;padding:18px 18px;border:1px solid var(--line);border-radius:var(--radius);
+    background:var(--paper);font-size:12.5px;color:var(--ink-2);line-height:1.85;box-shadow:var(--shadow)}
+  footer h2{font-size:13.5px;margin:0 0 8px;color:var(--red);letter-spacing:.3px;font-weight:800}
+  footer h2:not(:first-child){margin-top:16px}
+  footer ul{margin:0;padding-left:18px}
+  footer li{margin-bottom:3px}
+  footer code{background:var(--cream-2);padding:1px 5px;border-radius:4px;font-size:11.5px;color:var(--blue)}
+  footer .warnline{color:var(--warn);font-weight:700}
+
+  /* ================= 响应式 ================= */
+  @media (max-width:940px){
+    .layout{grid-template-columns:minmax(0,1fr)}
+    .catnav{position:static;top:auto;overflow:hidden}
+    .catnav h2{margin-bottom:6px}
+    .catnav .catlist{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch;min-width:0}
+    .catnav .catlist::-webkit-scrollbar{height:5px}
+    .catnav .catlist::-webkit-scrollbar-thumb{background:var(--line-2);border-radius:3px}
+    .catbtn{width:auto;flex:0 0 auto;margin-bottom:0;white-space:nowrap}
+    .catnav .divider{display:none}
+    .stats{grid-template-columns:repeat(3,1fr)}
+  }
+  @media (max-width:640px){
+    .wrap{padding:14px 11px 52px;overflow-x:hidden}
+    .grid{grid-template-columns:minmax(0,1fr)}
+    .searchrow .ghost{flex:0 0 auto}
+    .searchbox{flex:1 1 100%}
+    .drawer{width:100%;height:88%;top:auto;bottom:0;border-radius:16px 16px 0 0;transform:translateY(102%)}
+    .drawer.show{transform:none}
+    .dbody{padding:13px 15px 30px}
+    .dhead{padding:14px 15px 11px}
+    .dv-handle{display:block}
+  }
+  .dv-handle{display:none;width:38px;height:4px;background:var(--line-2);border-radius:3px;margin:0 auto 10px}
+  @media (max-width:375px){
+    .stats{grid-template-columns:repeat(2,1fr)}
+    .btn{padding:8px 10px;font-size:12px}
+  }
+  @media print{
+    body{background:#fff}
+    .toolbar,.totop,#toast,.catnav,.scrim,.drawer{display:none!important}
+    .layout{grid-template-columns:1fr}
+    .card .brief{display:block!important}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="kicker">Beijing · Official Booking Channels</div>
+    <h1>北京旅游景点预约入口汇总<span class="seal">预约指南</span></h1>
+    <p class="sub">仅收录<b>景区官方</b>与<b>北京市政务/文旅官方</b>公布的预约购票入口（官方小程序 / 公众号 / 官网 / 官方票务平台）。<b>不含任何第三方代抢、黄牛或收费代理渠道。</b>点击卡片查看预约规则，点击「详情」打开完整入口路径与跳转按钮；小程序类渠道无法用网址直接唤起，本页提供「复制名称 → 微信搜索」替代方案。</p>
+  </header>
+
+  <section class="stats" id="stats" aria-label="统计面板"></section>
+
+  <div class="toolbar">
+    <div class="searchrow">
+      <div class="searchbox">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
+        <input id="q" type="search" placeholder="搜索景点名称 / 行政区 / 预约渠道（如：小程序、海淀区、免预约）" autocomplete="off" aria-label="搜索景点">
+        <button class="clearbtn" id="clearBtn" type="button" title="清空" aria-label="清空搜索">✕</button>
+      </div>
+      <button class="ghost" id="toggleAll" type="button">全部展开</button>
+      <button class="ghost" id="exportJson" type="button">导出 JSON</button>
+      <button class="ghost" id="exportCsv" type="button">导出 CSV</button>
+    </div>
+    <div class="filters" id="filters"></div>
+    <div class="resultbar">
+      <span>当前显示 <b id="shown">0</b> 个景点</span>
+      <span id="hint">提示：点击卡片展开规则摘要，「详情」按钮查看完整入口</span>
+    </div>
+  </div>
+
+  <div class="layout">
+    <!-- 一级窗口：分类导航 -->
+    <nav class="catnav" aria-label="分类导航">
+      <h2>一级分类</h2>
+      <div class="catlist" id="catnav"></div>
+    </nav>
+
+    <!-- 二级窗口：景点列表 -->
+    <main class="main">
+      <div class="grid" id="grid" aria-live="polite"></div>
+    </main>
+  </div>
+
+  <footer>
+    <h2>数据来源类型</h2>
+    <ul>
+      <li>各景区<b>官方网站「参观须知 / 预约须知 / 票务政策」页面</b>（第一优先来源，逐条可溯源）。</li>
+      <li><b>北京市人民政府门户网站（首都之窗 beijing.gov.cn）</b>及北京市文旅局「京通」景区购票服务平台公告。</li>
+      <li>北京市园林绿化局「畅游公园」平台（bjgyol.com.cn）与市属公园统一预约购票说明。</li>
+      <li>权威媒体对预约政策变动的报道（光明网、北京日报等），用于交叉印证。</li>
+      <li>每张卡片详情底部标注该条目的具体来源链接，可逐条核对。</li>
+    </ul>
+
+    <h2>分层信息质量说明</h2>
+    <ul>
+      <li><b>置信度「高」</b>：预约渠道、规则与价格来自景区官网或政务官网原文（如故宫、国博、中国科技馆、中国美术馆、首都博物馆、天坛公园、国家大剧院等）。</li>
+      <li><b>置信度「中」</b>：渠道来自官方发布或权威媒体，但具体价格 / 开放时间可能随季节调整。</li>
+      <li><b>置信度「低」</b>：公开渠道未能直接核对其官方预约页面，已标注<span class="warnline">「需核实」</span>，出行前请以景区官方渠道为准。</li>
+      <li>本页共 <b id="totalFoot">—</b> 个景点，其中标注「需核实」的条目表示<b>未能从官方页面确认</b>其预约入口或价格的完整信息，本页不对该类信息的完整性负责。</li>
+    </ul>
+
+    <h2>已记录的预约政策变动</h2>
+    <ul>
+      <li><b>首都博物馆</b>：自 2025 年 12 月 20 日起实施<b>免预约参观</b>，仅需携带身份证件现场登记入馆。</li>
+      <li><b>天坛公园</b>：2026 年 9 月起<b>非暑期取消预约限制</b>，可直接现场购票或线上提前购票；暑期（7/1–8/31）仍实名分时段预约。</li>
+      <li><b>北京市属景区</b>：北京市景区购票服务平台已入驻「京通」微信小程序 / APP，整合 74 家市属 5A、4A 级景区官方购票渠道，采用「统一入口 + 跳转景区」模式。</li>
+      <li><b>开放式街区</b>（南锣鼓巷、什刹海、前门大街·大栅栏、798 艺术区、首钢园）与<b>免费公园</b>（紫竹院、奥林匹克森林公园、大运河文化旅游景区）现为<b>免预约</b>。</li>
+    </ul>
+
+    <h2>免责声明</h2>
+    <ul>
+      <li>本页面为公开信息整理汇编，<b>非官方发布</b>，仅供出行参考，不构成任何旅游服务承诺。</li>
+      <li>景区预约与票价政策调整频繁（旺季 / 假期 / 重大活动期间尤甚），<b>出行前请以景区官方渠道当日公示为准</b>。</li>
+      <li>凡以「代抢名额、包进景区、内部渠道」名义收费的，<b>均非官方渠道</b>，请勿轻信；故宫、国博、中国科技馆、孔庙和国子监博物馆等均已官方声明确未授权第三方代理门票。</li>
+      <li>小程序与公众号无法通过网址直接唤起，需在微信内搜索对应名称；本页「复制名称」仅为便于搜索，<b>不收集任何个人信息</b>，页面不发起任何网络请求。</li>
+    </ul>
+
+    <h2>数据更新时间</h2>
+    <ul>
+      <li>采集与整理时间：<b id="buildTime">—</b></li>
+    </ul>
+  </footer>
+</div>
+
+<!-- 三级窗口：详情抽屉 -->
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="dname" aria-hidden="true">
+  <div class="dhead">
+    <div class="dv-handle"></div>
+    <button class="dclose" id="dclose" type="button" title="关闭" aria-label="关闭详情">✕</button>
+    <h2 class="dname" id="dname">—</h2>
+    <div class="dmeta" id="dmeta"></div>
+    <div class="tags" id="dtags"></div>
+  </div>
+  <div class="dbody" id="dbody"></div>
+</aside>
+
+<button class="totop" id="toTop" type="button" title="回到顶部" aria-label="回到顶部">↑</button>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+/* =========================================================
+   数据层
+   每条记录字段：
+     name 景点名称 / district 所在区域 / category 一级分类
+     tags 二级标签数组（含 免费|收费、需预约|免预约|需购票、热门|小众、
+                        亲子|文化|拍照|夜游、容易|一般|困难|需提前多日）
+     channelType 预约渠道类型 / channelName 预约渠道名称
+     entry 具体入口路径 / link 官方预约链接
+     hours 开放时间 / rules 预约规则摘要 / price 门票价格
+     difficulty 预约难度 / remark 备注
+     status 信息状态（已确认|需核实）/ confidence 置信度（高|中|低）
+     source 来源URL
+   ========================================================= */
+const PAYLOAD = {"categories":["1-皇家园林与历史古迹","2-博物馆与展览馆","3-科技与艺术场馆","4-公园与自然景观","5-宗教寺庙与文化场所","6-胡同街区与文创园区","7-演出与夜游项目"],"records":[{"name":"故宫博物院","district":"东城区","category":"1-皇家园林与历史古迹","tags":["收费","需预约","热门","亲子","文化","需提前多日","困难"],"channelType":"小程序","channelName":"“故宫博物院”微信小程序","entry":"微信搜索“故宫博物院”小程序→门票预约（或访问故宫官网“在线订票”）；武英殿陶瓷馆及各特展、临展须单独预约","link":"https://www.dpm.org.cn/subject_booking/index.html","hours":"周一闭馆（法定节假日除外）；旺季4/1-10/31 8:30-17:00（16:00停止入馆），淡季11/1-次年3/31 8:30-16:30","rules":"不售当日票；大门票及珍宝馆、钟表馆门票于参观前7日20:00开售，限参观当日有效；全体观众实名预约，中国内地观众仅可使用身份证；同一证件每个参观日仅能预约1张；未使用门票须于参观前一日24:00前退票，逾期退票计1次爽约，180日内爽约3次则60日内无法预约；官方声明未授权任何第三方机构或个人代理门票","price":"旺季大门票60元、淡季40元；珍宝馆、钟表馆各10元；未满18周岁中国公民免费，本科及以下学生20元，60岁以上半价","difficulty":"困难","remark":"官方明确提示：请务必通过“故宫博物院”小程序预约，未授权任何第三方代理门票及展览预约","status":"已确认","confidence":"高","source":"https://www.dpm.org.cn/subject_booking/index.html","links":["https://www.dpm.org.cn/subject_booking/index.html"],"sources":["https://www.dpm.org.cn/subject_booking/index.html"],"no":1},{"name":"天安门城楼","district":"东城区","category":"1-皇家园林与历史古迹","tags":["收费","需预约","热门","文化","需提前多日","困难"],"channelType":"小程序","channelName":"天安门城楼参观预约（微信小程序，名称待官方核实）","entry":"微信搜索天安门城楼参观预约相关官方小程序→实名预约→按预约时段经指定安检口登楼","link":"https://tamgw.beijing.gov.cn/","hours":"随季节与重大活动调整，需核实","rules":"登城楼须实名预约并接受严格安检，禁止携带包袋等物品；天安门地区实行南向北单向通行；节假日及重大活动期间可能临时封闭，请以天安门地区管理委员会公告为准","price":"需核实","difficulty":"困难","remark":"登楼预约小程序名称与票价未能从官方页面直接确认，已标注“需核实”；广场可提供存包服务","status":"需核实","confidence":"中","source":"https://tamgw.beijing.gov.cn/","links":["https://tamgw.beijing.gov.cn/"],"sources":["https://tamgw.beijing.gov.cn/"],"no":2},{"name":"八达岭长城","district":"延庆区","category":"1-皇家园林与历史古迹","tags":["收费","需预约","热门","亲子","文化","需提前多日","一般"],"channelType":"小程序","channelName":"“京通”小程序景区购票 / 八达岭长城官方渠道","entry":"微信“京通”小程序→首页“景区购票”→搜索八达岭长城→立即购票；或使用八达岭长城景区官方公众号与官网","link":"https://www.beijing.gov.cn/ywdt/yaowen/202607/t20260714_4762602.html","hours":"旺季约6:30-16:30，淡季约7:30-16:00，随季节调整","rules":"北京市景区购票服务平台已整合八达岭长城等74家市属5A、4A级景区官方购票渠道，采用“统一入口+跳转景区”模式，一次填写个人信息即可多次多景点购票；购票日期可选即日起7天；节假日实行临时管控与限流","price":"旺季约40元、淡季约35元（以官方平台当日公示为准）","difficulty":"一般","remark":"2025年12月起“京通”微信小程序上线景区购票；2026年7月京通APP同步提供一站式购票；现场可能因限流启动临时管控","status":"已确认","confidence":"高","source":"https://www.beijing.gov.cn/ywdt/yaowen/202607/t20260714_4762602.html https://www.beijing.gov.cn/fuwu/bmfw/sy/jrts/202512/t20251202_4315958.html","links":["https://www.beijing.gov.cn/ywdt/yaowen/202607/t20260714_4762602.html"],"sources":["https://www.beijing.gov.cn/ywdt/yaowen/202607/t20260714_4762602.html","https://www.beijing.gov.cn/fuwu/bmfw/sy/jrts/202512/t20251202_4315958.html"],"no":3},{"name":"慕田峪长城","district":"怀柔区","category":"1-皇家园林与历史古迹","tags":["收费","需预约","热门","亲子","拍照","一般"],"channelType":"小程序","channelName":"慕田峪长城官方微信公众号 / 京通小程序","entry":"微信搜索“慕田峪长城”官方公众号→在线预订；或“京通”小程序→景区购票","link":"https://www.beijing.gov.cn/ywdt/yaowen/202607/t20260714_4762602.html","hours":"旺季约7:30-18:00，淡季约8:00-17:30","rules":"需实名购票，建议提前1-7天线上预订；缆车、索道、滑道为另有收费项目，需单独购票","price":"大门票约45元（不含缆车/索道）","difficulty":"一般","remark":"价格与预约入口请以景区官方公众号当季公示为准；外部平台报价可能不含缆车项目","status":"需核实","confidence":"中","source":"https://www.beijing.gov.cn/ywdt/yaowen/202607/t20260714_4762602.html","links":["https://www.beijing.gov.cn/ywdt/yaowen/202607/t20260714_4762602.html"],"sources":["https://www.beijing.gov.cn/ywdt/yaowen/202607/t20260714_4762602.html"],"no":4},{"name":"明十三陵","district":"昌平区","category":"1-皇家园林与历史古迹","tags":["收费","需预约","文化","一般"],"channelType":"小程序","channelName":"明十三陵官方预约渠道 / 京通小程序","entry":"微信“京通”小程序→景区购票→明十三陵；或通过明十三陵官方公众号预约","link":"https://www.beijing.gov.cn/ywdt/yaowen/202607/t20260714_4762602.html","hours":"各陵开放时间不同，一般约8:00-17:00","rules":"定陵、长陵、昭陵等分陵售票，联票与单陵票分设；需实名预约，节假日限流","price":"单陵约45元，联票约130元区间","difficulty":"一般","remark":"各陵票价与预约入口以官方平台当日公示为准","status":"需核实","confidence":"中","source":"https://www.beijing.gov.cn/ywdt/yaowen/202607/t20260714_4762602.html","links":["https://www.beijing.gov.cn/ywdt/yaowen/202607/t20260714_4762602.html"],"sources":["https://www.beijing.gov.cn/ywdt/yaowen/202607/t20260714_4762602.html"],"no":5},{"name":"圆明园遗址公园","district":"海淀区","category":"1-皇家园林与历史古迹","tags":["收费","需预约","热门","亲子","文化","容易"],"channelType":"公众号","channelName":"“圆明园遗址公园”微信公众号","entry":"微信搜索“圆明园遗址公园”公众号→门票预约→选择日期与票种；大门票与西洋楼遗址区、全景模型展联票分设","link":"https://www.beijing.gov.cn/","hours":"约7:00-19:00（随季节调整），遗址区开放时间另计","rules":"需实名预约；预约系统独立于“畅游公园”市属公园统一平台，须通过其官方公众号预约；大水法、西洋楼遗址区包含在联票内","price":"大门票10元，联票25元","difficulty":"容易","remark":"价格与开放时间以官方公众号公示为准；遗址区面积大，建议预留2-3小时","status":"已确认","confidence":"中","source":"https://www.beijing.gov.cn/","links":["https://www.beijing.gov.cn/"],"sources":["https://www.beijing.gov.cn/"],"no":6},{"name":"周口店北京人遗址","district":"房山区","category":"1-皇家园林与历史古迹","tags":["收费","需预约","文化","小众","容易"],"channelType":"公众号","channelName":"周口店北京人遗址博物馆官方微信公众号","entry":"微信搜索官方公众号→参观预约→选择参观日期","link":"https://www.beijing.gov.cn/","hours":"约9:00-16:30，周一闭馆","rules":"需实名预约；门票含遗址公园与博物馆区域；寒暑假研学团队较多","price":"约30元","difficulty":"容易","remark":"位于房山区，距市区较远，建议提前预约并核对开闭馆日；开放时间以官方公示为准","status":"已确认","confidence":"中","source":"https://www.beijing.gov.cn/","links":["https://www.beijing.gov.cn/"],"sources":["https://www.beijing.gov.cn/"],"no":7},{"name":"卢沟桥·宛平城","district":"丰台区","category":"1-皇家园林与历史古迹","tags":["收费","需预约","文化","小众","容易"],"channelType":"公众号","channelName":"中国人民抗日战争纪念馆 / 卢沟桥景区官方渠道","entry":"微信搜索官方公众号→参观预约（纪念馆）；卢沟桥景区单独售票","link":"https://www.beijing.gov.cn/","hours":"纪念馆约9:00-16:30，周一闭馆；卢沟桥景区白天开放","rules":"纪念馆免费但需预约；卢沟桥景区单独收费；二者分属不同管理方，须分别预约与购票","price":"卢沟桥约20元，抗战纪念馆免费","difficulty":"容易","remark":"预约入口未能从官方页面直接核对，已标注“需核实”；宛平城内纪念馆与卢沟桥需分别安排","status":"需核实","confidence":"低","source":"https://www.beijing.gov.cn/","links":["https://www.beijing.gov.cn/"],"sources":["https://www.beijing.gov.cn/"],"no":8},{"name":"中国国家博物馆","district":"东城区","category":"2-博物馆与展览馆","tags":["免费","需预约","热门","亲子","文化","需提前多日","困难"],"channelType":"官网+小程序+公众号","channelName":"“国家博物馆”微信小程序 / 微信公众号 / 官网","entry":"微信搜索“国家博物馆”小程序→参观预约；或国博官网→参观预约；每日17:00放票","link":"https://www.chnmuseum.cn/cg/cgyy/202511/t20251109_277547.shtml","hours":"每日9:00-17:00（16:00停止入馆），周一闭馆（法定节假日除外）；6/1-10/31高峰期延至17:30（16:30停止入馆）","rules":"提前7日内预约；账号每周最多预约1次、每次最多5人；同一证件号每月最多4次、每天1次；预约后退票仍计入次数；每证件累计3次未履约将被限制预约30日；每日17:00放票，退票截止参观当日15:00；凭本人预约证件原件从北门入馆","price":"免费（需预约）","difficulty":"困难","remark":"国家顶级综合馆，放票后迅速约满；60岁以上老人及残障、军人等可走北门绿色通道；预约须知自2025年8月1日起实施","status":"已确认","confidence":"高","source":"https://www.chnmuseum.cn/cg/cgyy/202511/t20251109_277547.shtml","links":["https://www.chnmuseum.cn/cg/cgyy/202511/t20251109_277547.shtml"],"sources":["https://www.chnmuseum.cn/cg/cgyy/202511/t20251109_277547.shtml"],"no":9},{"name":"首都博物馆","district":"西城区","category":"2-博物馆与展览馆","tags":["免费","免预约","文化","亲子","容易"],"channelType":"无需预约","channelName":"现场登记入馆","entry":"无需预约：携带个人有效身份证件，按现场引导自北门有序登记入馆；地下一层东门为观众出口","link":"https://www.capitalmuseum.org.cn/news/6f5b571224214a1fa2c5019cea051080","hours":"9:00-17:00，周一闭馆（法定节假日除外）","rules":"自2025年12月20日起实施免预约参观政策，已取消线上预约；凭有效身份证件现场登记入馆","price":"免费","difficulty":"容易","remark":"政策已变动：2025年12月20日起取消预约制，改为现场登记入馆","status":"已确认","confidence":"高","source":"https://www.capitalmuseum.org.cn/news/6f5b571224214a1fa2c5019cea051080","links":["https://www.capitalmuseum.org.cn/news/6f5b571224214a1fa2c5019cea051080"],"sources":["https://www.capitalmuseum.org.cn/news/6f5b571224214a1fa2c5019cea051080"],"no":10},{"name":"北京大运河博物馆（首博东馆）","district":"通州区","category":"2-博物馆与展览馆","tags":["免费","需预约","热门","亲子","文化","容易"],"channelType":"公众号","channelName":"北京大运河博物馆官方微信公众号","entry":"微信搜索官方公众号→参观预约→选择日期与时段","link":"https://www.canalmuseum.org.cn/index.html","hours":"约10:00-20:00，周一闭馆（以官方公告为准）","rules":"需实名预约，节假日限流；与首都博物馆本馆预约政策不同，本馆已免预约而东馆仍需预约","price":"免费（需预约）","difficulty":"容易","remark":"位于城市副中心，建议乘地铁前往；开放时间以官方公告为准","status":"已确认","confidence":"中","source":"https://www.canalmuseum.org.cn/index.html","links":["https://www.canalmuseum.org.cn/index.html"],"sources":["https://www.canalmuseum.org.cn/index.html"],"no":11},{"name":"北京石刻艺术博物馆（五塔寺）","district":"海淀区","category":"2-博物馆与展览馆","tags":["收费","需预约","小众","文化","容易"],"channelType":"公众号","channelName":"北京石刻艺术博物馆官方微信公众号","entry":"微信搜索官方公众号→预约参观","link":"https://wwj.beijing.gov.cn/","hours":"约9:00-17:00，周一闭馆","rules":"需预约，可持北京博物馆通票；金刚宝座塔为全国重点文物保护单位","price":"约20元","difficulty":"容易","remark":"价格与开闭馆日以官方公示为准；秋季银杏为热门拍照季","status":"已确认","confidence":"中","source":"https://wwj.beijing.gov.cn/","links":["https://wwj.beijing.gov.cn/"],"sources":["https://wwj.beijing.gov.cn/"],"no":12},{"name":"国家自然博物馆","district":"东城区","category":"2-博物馆与展览馆","tags":["免费","需预约","热门","亲子","需提前多日","一般"],"channelType":"官网+公众号","channelName":"国家自然博物馆官方网站 / 微信公众号","entry":"官网→参观→参观信息→预约；或关注微信公众号扫码预约","link":"https://www.nnhm.org.cn/cgzx/cgxx/index.shtml","hours":"9:00-17:00（16:30停止入馆），周一例行闭馆（国家法定节假日除外）","rules":"实行限量、预约、错峰；分9:00-11:00、11:00-14:00、14:00-16:00三个入馆时段；个人提前3日预约、每日11:00更新，团体提前4日、每日10:00更新；不接受现场预约；实名制，每人每日限1次；老年人、儿童也须提前预约；当月累计3次爽约则90日内无法预约","price":"免费（需预约）","difficulty":"一般","remark":"亲子热门馆，需提前3天抢名额；12周岁以下未成年人无法单独预约；首次预约需手机号注册","status":"已确认","confidence":"高","source":"https://www.nnhm.org.cn/cgzx/cgxx/index.shtml","links":["https://www.nnhm.org.cn/cgzx/cgxx/index.shtml"],"sources":["https://www.nnhm.org.cn/cgzx/cgxx/index.shtml"],"no":13},{"name":"中国地质博物馆","district":"西城区","category":"2-博物馆与展览馆","tags":["收费","需预约","亲子","文化","小众","容易"],"channelType":"公众号","channelName":"中国地质博物馆微信公众号","entry":"微信公众号实名登录→进入预约系统→跳转官方购票小程序；预约通道分普通成人票与优惠票","link":"https://www.gmc.org.cn/tour.html","hours":"9:00-18:00（17:30停止入场）；周一闭馆（节假日、寒暑假除外）","rules":"线上预约与线下购票验证相结合；每日线上预约3500人、线下购票500人，观众总量不超过4000人；优惠人群也需通过购票或现场换票入馆；入馆核验预约信息或二代身份证等有效证件","price":"普通成人票15元；未成年人、学生、教师、60岁以上老人、军人等0元优惠票","difficulty":"容易","remark":"馆内空间有限，日限额4000人；地铁4号线西四站D口可达；咨询电话010-66557858","status":"已确认","confidence":"高","source":"https://www.gmc.org.cn/tour.html","links":["https://www.gmc.org.cn/tour.html"],"sources":["https://www.gmc.org.cn/tour.html"],"no":14},{"name":"中国古动物馆","district":"西城区","category":"2-博物馆与展览馆","tags":["收费","需预约","亲子","小众","容易"],"channelType":"公众号","channelName":"“中国古动物馆”微信公众号","entry":"关注“中国古动物馆”微信公众号→在公众号内预约购买门票","link":"https://www.paleozoo.cn/page56","hours":"约9:00-16:30，周一闭馆（以官方公告为准）","rules":"须在官方公众号内预约购票；6岁及以上未成年人需提前预约；3D电影票另购，播放时间为公休日、法定节假日及寒暑假","price":"成人20元；学生及60岁以上老人优惠票10元；未成年人、现役军人、残疾人等免门票","difficulty":"容易","remark":"隶属中国科学院古脊椎动物与古人类研究所，以恐龙化石展品知名；咨询电话010-88369210","status":"已确认","confidence":"高","source":"https://www.paleozoo.cn/page56","links":["https://www.paleozoo.cn/page56"],"sources":["https://www.paleozoo.cn/page56"],"no":15},{"name":"中国现代文学馆","district":"朝阳区","category":"2-博物馆与展览馆","tags":["免费","需预约","文化","小众","容易"],"channelType":"公众号","channelName":"中国现代文学馆官方微信公众号","entry":"微信搜索官方公众号→参观预约","link":"https://www.wxg.org.cn/","hours":"约9:00-16:30，周一闭馆","rules":"需实名预约，免费参观；常有文学主题特展与作家手稿展","price":"免费（需预约）","difficulty":"容易","remark":"位于朝阳区芍药居；预约路径以官方公众号为准","status":"已确认","confidence":"中","source":"https://www.wxg.org.cn/","links":["https://www.wxg.org.cn/"],"sources":["https://www.wxg.org.cn/"],"no":16},{"name":"国家动物博物馆","district":"朝阳区","category":"2-博物馆与展览馆","tags":["收费","需预约","亲子","小众","容易"],"channelType":"公众号","channelName":"国家动物博物馆官方微信公众号","entry":"微信搜索官方公众号→预约购票","link":"https://www.visitbeijing.com.cn/","hours":"约9:00-16:00，周一闭馆","rules":"需预约购票，节假日限流；依托中国科学院动物研究所标本馆","price":"约40元（以官方公示为准）","difficulty":"容易","remark":"票价与开闭馆日以官方公众号公示为准","status":"已确认","confidence":"中","source":"https://www.visitbeijing.com.cn/","links":["https://www.visitbeijing.com.cn/"],"sources":["https://www.visitbeijing.com.cn/"],"no":17},{"name":"中国航空博物馆","district":"昌平区","category":"2-博物馆与展览馆","tags":["免费","需预约","亲子","小众","一般"],"channelType":"公众号","channelName":"中国航空博物馆官方预约渠道","entry":"微信搜索官方公众号或小程序→实名预约","link":"https://www.beijing.gov.cn/","hours":"约9:00-16:00，周一闭馆","rules":"免费但需实名预约；室外展区面积大，洞库展厅与露天展区需分别安排游览时间","price":"免费（需预约）","difficulty":"一般","remark":"场馆规模大、室外展区多，建议预留半天；预约入口未能从官方页面直接核对，已标注“需核实”","status":"需核实","confidence":"低","source":"https://www.beijing.gov.cn/","links":["https://www.beijing.gov.cn/"],"sources":["https://www.beijing.gov.cn/"],"no":18},{"name":"中国铁道博物馆","district":"朝阳区","category":"2-博物馆与展览馆","tags":["收费","需预约","亲子","小众","容易"],"channelType":"公众号","channelName":"中国铁道博物馆官方微信公众号","entry":"微信搜索官方公众号→预约参观；正阳门馆、东郊馆、詹天佑纪念馆分别预约","link":"https://www.visitbeijing.com.cn/","hours":"约9:00-17:00，周一闭馆","rules":"一馆多址，各分馆需分别预约，票价不同；东郊馆（环形铁道）以机车车辆实物为主","price":"正阳门馆、东郊馆各约20元区间","difficulty":"容易","remark":"分馆预约与票价以官方公示为准；正阳门馆位于前门大街，可与前门街区同日程安排","status":"已确认","confidence":"中","source":"https://www.visitbeijing.com.cn/","links":["https://www.visitbeijing.com.cn/"],"sources":["https://www.visitbeijing.com.cn/"],"no":19},{"name":"中国电影博物馆","district":"朝阳区","category":"2-博物馆与展览馆","tags":["免费","需预约","亲子","文化","小众","容易"],"channelType":"公众号","channelName":"中国电影博物馆官方微信公众号","entry":"微信搜索官方公众号→预约参观","link":"https://www.visitbeijing.com.cn/","hours":"约9:00-16:30，周一闭馆","rules":"免费但需预约，凭预约信息与有效证件入馆；IMAX影厅放映电影需另外购票","price":"免费（需预约）","difficulty":"容易","remark":"位于朝阳区南影路；开闭馆日与预约路径以官方公众号为准","status":"已确认","confidence":"中","source":"https://www.visitbeijing.com.cn/","links":["https://www.visitbeijing.com.cn/"],"sources":["https://www.visitbeijing.com.cn/"],"no":20},{"name":"中国印刷博物馆","district":"大兴区","category":"2-博物馆与展览馆","tags":["免费","需预约","文化","小众","容易"],"channelType":"公众号","channelName":"中国印刷博物馆官方微信公众号","entry":"微信搜索官方公众号→预约参观","link":"https://www.beijing.gov.cn/","hours":"约9:00-16:30，周一闭馆","rules":"免费但需预约；以印刷术发展史与印刷设备实物为特色","price":"免费（需预约）","difficulty":"容易","remark":"位于大兴区；预约入口未能从官方页面直接核对，已标注“需核实”","status":"需核实","confidence":"低","source":"https://www.beijing.gov.cn/","links":["https://www.beijing.gov.cn/"],"sources":["https://www.beijing.gov.cn/"],"no":21},{"name":"中国海关博物馆","district":"东城区","category":"2-博物馆与展览馆","tags":["免费","需预约","文化","小众","容易"],"channelType":"官网","channelName":"中国海关博物馆官网预约渠道","entry":"官网→门票预约 / 预约指南；官网预约页在部分网络环境访问受限，请用浏览器直接打开","link":"https://www.beijing.gov.cn/","hours":"约9:00-16:30，周一闭馆","rules":"需预约，免费参观；以海关历史与查私实物展陈为主","price":"免费（需预约）","difficulty":"容易","remark":"官网预约页访问受限（HTTP 412），预约详情请以官网预约指南或电话咨询为准","status":"需核实","confidence":"中","source":"https://www.beijing.gov.cn/","links":["https://www.beijing.gov.cn/"],"sources":["https://www.beijing.gov.cn/"],"no":22},{"name":"中国园林博物馆","district":"丰台区","category":"2-博物馆与展览馆","tags":["免费","需预约","亲子","文化","小众","容易"],"channelType":"公众号","channelName":"中国园林博物馆官方微信公众号","entry":"微信搜索官方公众号→预约参观","link":"https://www.visitbeijing.com.cn/","hours":"约9:00-17:00，周一闭馆","rules":"免费但需预约；室内展园与室外展区结合，适合亲子","price":"免费（需预约）","difficulty":"容易","remark":"位于丰台区鹰山脚下；预约入口未能从官方页面直接核对，已标注“需核实”","status":"需核实","confidence":"低","source":"https://www.visitbeijing.com.cn/","links":["https://www.visitbeijing.com.cn/"],"sources":["https://www.visitbeijing.com.cn/"],"no":23},{"name":"中国妇女儿童博物馆","district":"东城区","category":"2-博物馆与展览馆","tags":["免费","需预约","亲子","小众","容易"],"channelType":"公众号","channelName":"中国妇女儿童博物馆官方微信公众号","entry":"微信搜索官方公众号→参观预约","link":"https://www.visitbeijing.com.cn/","hours":"约9:00-16:30，周一闭馆","rules":"免费但需预约；以妇女儿童主题历史与当代展陈为主","price":"免费（需预约）","difficulty":"容易","remark":"位于东城区建国门内大街；预约入口未能从官方页面直接核对，已标注“需核实”","status":"需核实","confidence":"低","source":"https://www.visitbeijing.com.cn/","links":["https://www.visitbeijing.com.cn/"],"sources":["https://www.visitbeijing.com.cn/"],"no":24},{"name":"中国科学技术馆","district":"朝阳区","category":"3-科技与艺术场馆","tags":["收费","需预约","热门","亲子","需提前多日","困难"],"channelType":"官网+公众号","channelName":"“中国科学技术馆”公众号 / “中国科学技术馆服务号” / 官网","entry":"微信搜索公众号→购票；或官网→预约购票；个人购票与团体购票为不同入口","link":"https://www.cstm.org.cn/ykfw/yygp/index.html","hours":"主展厅9:30-17:00（中午不清场）；儿童科学乐园分上午场9:30-12:50、下午场13:40-17:00；特效影院按场次","rules":"实行网络实名售检票，参观须提前订票，最早可于参观7日前18:00开始预订；所有观众均需购票（含免费与优惠人群）并持本人有效证件入馆；参观当日不售团体票；官方声明未授权任何第三方平台、商家或个人出售门票","price":"主展厅旺季30元、淡季20元；儿童科学乐园30元；特效影院30元；8周岁以下或1.3米以下儿童、60岁以上老人等免费","difficulty":"困难","remark":"亲子科普第一热门，周末与假期需抢票；旺季为国家法定节假日和暑期7/1-8/31；官方公众号：ptm_2014、cdstm2013","status":"已确认","confidence":"高","source":"https://www.cstm.org.cn/ykfw/yygp/index.html","links":["https://www.cstm.org.cn/ykfw/yygp/index.html"],"sources":["https://www.cstm.org.cn/ykfw/yygp/index.html"],"no":25},{"name":"中国美术馆","district":"东城区","category":"3-科技与艺术场馆","tags":["免费","需预约","热门","文化","一般"],"channelType":"官网+公众号+小程序","channelName":"中国美术馆官网 / 微信服务号 / 微信小程序","entry":"官网→导览→在线预约→个人预约；或微信搜索中国美术馆服务号、小程序预约","link":"https://www.namoc.cn/namoc/cgzn/202507/a737a2697fed43f9a68637767dc0c54e.shtml","hours":"9:00-17:00（16:00停止入馆），周一闭馆（国家法定节假日除外）","rules":"每日预约6000人，额满为止；提前7日预约，每日16:00开放；每人每天可预约1次、每账号最多5人；60岁以上老人、残障人士、现役及退役军人、消防救援人员凭优待证件免预约；6周岁以下儿童免预约；30天内累计爽约3次则30日内无法预约","price":"免费（需预约）","difficulty":"一般","remark":"重大展览期间名额紧张；须在预约时段入馆，无法到馆请于参观当日16:00前取消","status":"已确认","confidence":"高","source":"https://www.namoc.cn/namoc/cgzn/202507/a737a2697fed43f9a68637767dc0c54e.shtml","links":["https://www.namoc.cn/namoc/cgzn/202507/a737a2697fed43f9a68637767dc0c54e.shtml"],"sources":["https://www.namoc.cn/namoc/cgzn/202507/a737a2697fed43f9a68637767dc0c54e.shtml"],"no":26},{"name":"北京鲁迅博物馆","district":"西城区","category":"3-科技与艺术场馆","tags":["免费","需预约","文化","小众","容易"],"channelType":"公众号+电话","channelName":"北京鲁迅博物馆微信公众号（北大红楼馆区为电话预约）","entry":"关注北京鲁迅博物馆微信公众号→预约参观；北大红楼馆区改为电话预约","link":"https://luxunmuseum.com.cn/fuwutai/yuyuecanguan/","hours":"约9:00-16:00，周一闭馆","rules":"鲁迅博物馆馆区通过微信公众号预约；北大红楼馆区预约电话010-52208928、010-52208929；馆区咨询电话010-50872677","price":"免费（需预约）","difficulty":"容易","remark":"含北京新文化运动纪念馆（北大红楼）；两个馆区预约方式不同，注意区分","status":"已确认","confidence":"高","source":"https://luxunmuseum.com.cn/fuwutai/yuyuecanguan/","links":["https://luxunmuseum.com.cn/fuwutai/yuyuecanguan/"],"sources":["https://luxunmuseum.com.cn/fuwutai/yuyuecanguan/"],"no":27},{"name":"北京天文馆","district":"西城区","category":"3-科技与艺术场馆","tags":["收费","需预约","热门","亲子","一般"],"channelType":"公众号","channelName":"“北京天文馆”微信公众号","entry":"微信搜索“北京天文馆”公众号→左下角“参观指南”→“天文馆购票”；分剧场票、展厅票、活动票","link":"https://www.bjp.org.cn/cgzn/pwxx/index.html","hours":"约9:00-16:30，周一闭馆；暑期延长开放（以官方公告为准）","rules":"可购买3日内（含当日）展厅票、剧场票，每单限额6张；实名预约购票；优惠人群（含老人、幼儿）也须预约展厅票；购买剧场票者凭当日有效剧场票可免费参观展厅；团队30人以上需提前3天电话预约","price":"展厅票与剧场票分设，票价以购票页公示为准；未成年人、60岁以上老人等凭有效证件免费参观展厅（需预约）","difficulty":"一般","remark":"东门入馆、北门离馆；无对外停车场，建议绿色出行；咨询电话010-68312517","status":"已确认","confidence":"高","source":"https://www.bjp.org.cn/cgzn/pwxx/index.html","links":["https://www.bjp.org.cn/cgzn/pwxx/index.html"],"sources":["https://www.bjp.org.cn/cgzn/pwxx/index.html"],"no":28},{"name":"清华大学艺术博物馆","district":"海淀区","category":"3-科技与艺术场馆","tags":["收费","需预约","文化","热门","一般"],"channelType":"官网+公众号","channelName":"清华大学艺术博物馆官网 / 官方微信公众号","entry":"官网→参观服务→预约购票；或微信搜索官方公众号预约","link":"https://mp.weixin.qq.com/s/um65dRI5EaPSbZxdA1KtHw","hours":"约9:00-17:00，周一闭馆","rules":"需实名预约；校外观众通常须同时满足入校与入馆预约要求，且入校政策随校园管理动态调整","price":"常设展与特展票价不同，约20-60元区间","difficulty":"一般","remark":"校外观众入校政策可能随校园管理调整，出行前务必先核实入校与入馆预约要求","status":"已确认","confidence":"中","source":"https://mp.weixin.qq.com/s/um65dRI5EaPSbZxdA1KtHw","links":["https://mp.weixin.qq.com/s/um65dRI5EaPSbZxdA1KtHw"],"sources":["https://mp.weixin.qq.com/s/um65dRI5EaPSbZxdA1KtHw"],"no":29},{"name":"中央美术学院美术馆","district":"朝阳区","category":"3-科技与艺术场馆","tags":["收费","需预约","文化","小众","容易"],"channelType":"公众号","channelName":"中央美术学院美术馆官方微信公众号","entry":"微信搜索官方公众号→预约购票","link":"https://www.visitbeijing.com.cn/","hours":"约9:30-17:30，周一闭馆","rules":"需预约购票，特展票价不同；位于中央美术学院望京校区内","price":"约20-60元区间","difficulty":"容易","remark":"位于朝阳区花家地南街；预约入口未能从官方页面直接核对，已标注“需核实”","status":"需核实","confidence":"低","source":"https://www.visitbeijing.com.cn/","links":["https://www.visitbeijing.com.cn/"],"sources":["https://www.visitbeijing.com.cn/"],"no":30},{"name":"今日美术馆","district":"朝阳区","category":"3-科技与艺术场馆","tags":["收费","需预约","文化","拍照","小众","容易"],"channelType":"公众号","channelName":"今日美术馆官方微信公众号","entry":"微信搜索官方公众号→预约购票","link":"https://www.visitbeijing.com.cn/","hours":"约10:00-18:00，周一闭馆","rules":"需预约购票，以当代艺术特展为主；不同展览票价分设","price":"约60-100元区间","difficulty":"容易","remark":"位于朝阳区百子湾路；预约入口未能从官方页面直接核对，已标注“需核实”","status":"需核实","confidence":"低","source":"https://www.visitbeijing.com.cn/","links":["https://www.visitbeijing.com.cn/"],"sources":["https://www.visitbeijing.com.cn/"],"no":31},{"name":"天坛公园","district":"东城区","category":"4-公园与自然景观","tags":["收费","免预约","热门","亲子","文化","容易"],"channelType":"公众号+小程序","channelName":"“畅游公园”公众号/小程序 / “京通”小程序 / “天坛”小程序","entry":"“京通”小程序→首页“景区购票”→天坛公园→立即购票；或“畅游公园”公众号→预约购票→市属公园；或微信搜索“天坛”小程序","link":"https://www.beijing.gov.cn/fuwu/bmfw/sy/jrts/202512/t20251202_4315958.html","hours":"大门旺季6:00开园、21:00停止入园；核心景点8:00开放，旺季17:30停止进入、18:00闭园；周一为园中园闭馆日","rules":"政策已变动：2026年9月起非暑期（9月1日至次年6月30日）取消预约限制，可直接现场购票或线上提前购票；暑期（7月1日-8月31日）仍实行实名分时段预约，每日限流8万张、其中联票2万张；可提前1-7天购票；官方渠道为天坛小程序、畅游公园、京通小程序","price":"大门票旺季15元、淡季10元；联票旺季34元、淡季28元（含祈年殿、回音壁、圜丘）；学生半价；60岁以上老人、18岁以下未成年人免大门票","difficulty":"容易","remark":"非暑期已取消预约；暑期联票常在开售30分钟内售罄，务必提前抢票","status":"已确认","confidence":"高","source":"https://www.beijing.gov.cn/fuwu/bmfw/sy/jrts/202512/t20251202_4315958.html","links":["https://www.beijing.gov.cn/fuwu/bmfw/sy/jrts/202512/t20251202_4315958.html"],"sources":["https://www.beijing.gov.cn/fuwu/bmfw/sy/jrts/202512/t20251202_4315958.html"],"no":32},{"name":"颐和园","district":"海淀区","category":"4-公园与自然景观","tags":["收费","需预约","热门","亲子","文化","一般"],"channelType":"公众号+小程序+官网","channelName":"“畅游公园”公众号/小程序 / “京通”小程序 / 畅游公园官网","entry":"“京通”小程序→景区购票→颐和园；或“畅游公园”公众号→预约购票→市属公园→颐和园；官网 bjgyol.com.cn","link":"https://japanese.beijing.gov.cn/quickguideservices/purchaseparktickets/index.html","hours":"旺季6:30-18:00，淡季7:00-17:00（随季节调整）","rules":"畅游公园平台可提前1-7天实名预约购票，支持现场综合服务窗口购票；旺季建议线上预约；外籍观众可使用护照或永久居留证信息购票","price":"旺季大门票30元、淡季20元；联票旺季60元、淡季50元","difficulty":"一般","remark":"由“畅游公园”统一平台覆盖；如需中文以外语言界面，畅游公园官网可切换英文","status":"已确认","confidence":"高","source":"https://japanese.beijing.gov.cn/quickguideservices/purchaseparktickets/index.html","links":["https://japanese.beijing.gov.cn/quickguideservices/purchaseparktickets/index.html"],"sources":["https://japanese.beijing.gov.cn/quickguideservices/purchaseparktickets/index.html"],"no":33},{"name":"北海公园","district":"西城区","category":"4-公园与自然景观","tags":["收费","需预约","热门","亲子","文化","容易"],"channelType":"公众号+小程序","channelName":"“畅游公园”公众号/小程序 / “京通”小程序","entry":"“京通”小程序→景区购票→北海公园；或“畅游公园”公众号→预约购票→市属公园→北海公园","link":"https://japanese.beijing.gov.cn/quickguideservices/purchaseparktickets/index.html","hours":"旺季6:30-21:00，淡季6:30-20:00（随季节调整）","rules":"可提前1-7天实名预约购票，也可现场购票；旺季建议线上预约","price":"旺季门票10元、淡季5元；联票旺季20元、淡季15元","difficulty":"容易","remark":"琼华岛白塔、九龙壁、静心斋为核心景点，联票更划算","status":"已确认","confidence":"高","source":"https://japanese.beijing.gov.cn/quickguideservices/purchaseparktickets/index.html","links":["https://japanese.beijing.gov.cn/quickguideservices/purchaseparktickets/index.html"],"sources":["https://japanese.beijing.gov.cn/quickguideservices/purchaseparktickets/index.html"],"no":34},{"name":"景山公园","district":"西城区","category":"4-公园与自然景观","tags":["收费","需预约","热门","拍照","文化","容易"],"channelType":"公众号+小程序","channelName":"“畅游公园”公众号/小程序 / “京通”小程序","entry":"“京通”小程序→景区购票→景山公园；或“畅游公园”公众号→预约购票→市属公园→景山公园","link":"https://japanese.beijing.gov.cn/quickguideservices/purchaseparktickets/index.html","hours":"旺季6:30-21:00，淡季6:30-20:00","rules":"可提前1-7天实名预约购票，也可现场购票","price":"门票2元；牡丹节等花期活动期间票价可能调整","difficulty":"容易","remark":"万春亭为俯瞰故宫与中轴线的最佳机位，日落时段人流集中","status":"已确认","confidence":"高","source":"https://japanese.beijing.gov.cn/quickguideservices/purchaseparktickets/index.html","links":["https://japanese.beijing.gov.cn/quickguideservices/purchaseparktickets/index.html"],"sources":["https://japanese.beijing.gov.cn/quickguideservices/purchaseparktickets/index.html"],"no":35},{"name":"中山公园","district":"东城区","category":"4-公园与自然景观","tags":["收费","需预约","文化","亲子","容易"],"channelType":"公众号+小程序","channelName":"“畅游公园”公众号/小程序 / “京通”小程序","entry":"“京通”小程序→景区购票→中山公园；或“畅游公园”公众号→预约购票→市属公园→中山公园","link":"https://japanese.beijing.gov.cn/quickguideservices/purchaseparktickets/index.html","hours":"旺季6:00-21:00，淡季6:30-20:00","rules":"可提前1-7天实名预约购票，也可现场购票","price":"门票3元；郁金香花期等特殊时段票价调整","difficulty":"容易","remark":"社稷坛、中山堂位于园内；紧邻天安门西侧，安检口排队时间可能较长","status":"已确认","confidence":"高","source":"https://japanese.beijing.gov.cn/quickguideservices/purchaseparktickets/index.html","links":["https://japanese.beijing.gov.cn/quickguideservices/purchaseparktickets/index.html"],"sources":["https://japanese.beijing.gov.cn/quickguideservices/purchaseparktickets/index.html"],"no":36},{"name":"陶然亭公园","district":"西城区","category":"4-公园与自然景观","tags":["收费","需预约","亲子","小众","容易"],"channelType":"公众号+小程序","channelName":"“畅游公园”公众号/小程序","entry":"“畅游公园”公众号→预约购票→市属公园→陶然亭公园；或“京通”小程序→景区购票","link":"https://japanese.beijing.gov.cn/quickguideservices/purchaseparktickets/index.html","hours":"旺季6:00-21:30，淡季6:00-21:00","rules":"可提前1-7天实名预约购票，也可现场购票；冬季冰雪活动期间另售活动票","price":"门票2元；冰雪季等活动期间另计","difficulty":"容易","remark":"以陶然亭、慈悲庵等名胜著称；冬季冰雪嘉年华为亲子热门","status":"已确认","confidence":"中","source":"https://japanese.beijing.gov.cn/quickguideservices/purchaseparktickets/index.html","links":["https://japanese.beijing.gov.cn/quickguideservices/purchaseparktickets/index.html"],"sources":["https://japanese.beijing.gov.cn/quickguideservices/purchaseparktickets/index.html"],"no":37},{"name":"紫竹院公园","district":"海淀区","category":"4-公园与自然景观","tags":["免费","免预约","亲子","小众","容易"],"channelType":"无需预约","channelName":"无需预约，免费入园","entry":"无需预约、免费入园；该公园不售票，直接进园即可","link":"https://japanese.beijing.gov.cn/quickguideservices/purchaseparktickets/index.html","hours":"约6:00-21:00","rules":"北京市官方指南明确：紫竹院公园入园不需门票，也无需预约","price":"免费","difficulty":"容易","remark":"免预约、免费开放；以竹景与划船著称","status":"已确认","confidence":"高","source":"https://japanese.beijing.gov.cn/quickguideservices/purchaseparktickets/index.html","links":["https://japanese.beijing.gov.cn/quickguideservices/purchaseparktickets/index.html"],"sources":["https://japanese.beijing.gov.cn/quickguideservices/purchaseparktickets/index.html"],"no":38},{"name":"玉渊潭公园","district":"海淀区","category":"4-公园与自然景观","tags":["收费","需预约","热门","亲子","拍照","一般"],"channelType":"公众号+小程序","channelName":"“畅游公园”公众号/小程序 / “京通”小程序","entry":"“畅游公园”公众号→预约购票→市属公园→玉渊潭公园；或“京通”小程序→景区购票","link":"https://japanese.beijing.gov.cn/quickguideservices/purchaseparktickets/index.html","hours":"约6:00-21:00","rules":"可提前1-7天实名预约购票；樱花季为全年高峰，实行预约限流","price":"门票2元；樱花季文化活动期间票价调整为10元","difficulty":"一般","remark":"樱花季（3-4月）为全年最热门时段，务必提前预约；平时可现场购票","status":"已确认","confidence":"高","source":"https://japanese.beijing.gov.cn/quickguideservices/purchaseparktickets/index.html","links":["https://japanese.beijing.gov.cn/quickguideservices/purchaseparktickets/index.html"],"sources":["https://japanese.beijing.gov.cn/quickguideservices/purchaseparktickets/index.html"],"no":39},{"name":"香山公园","district":"海淀区","category":"4-公园与自然景观","tags":["收费","需预约","热门","亲子","拍照","一般"],"channelType":"公众号+小程序","channelName":"“畅游公园”公众号/小程序 / “京通”小程序","entry":"“畅游公园”公众号→预约购票→市属公园→香山公园；或“京通”小程序→景区购票","link":"https://japanese.beijing.gov.cn/quickguideservices/purchaseparktickets/index.html","hours":"旺季6:00-19:00，淡季6:00-18:00","rules":"可提前1-7天实名预约购票；红叶季实行强化限流与预约管理","price":"旺季门票10元、淡季5元；碧云寺、双清别墅等景点另计","difficulty":"一般","remark":"红叶季（10月下旬-11月）人流极大，建议提前预约并按早班时段入园","status":"已确认","confidence":"高","source":"https://japanese.beijing.gov.cn/quickguideservices/purchaseparktickets/index.html","links":["https://japanese.beijing.gov.cn/quickguideservices/purchaseparktickets/index.html"],"sources":["https://japanese.beijing.gov.cn/quickguideservices/purchaseparktickets/index.html"],"no":40},{"name":"北京动物园","district":"西城区","category":"4-公园与自然景观","tags":["收费","需预约","热门","亲子","一般"],"channelType":"公众号+小程序","channelName":"“畅游公园”公众号/小程序 / “京通”小程序","entry":"“畅游公园”公众号→预约购票→市属公园→北京动物园；或“京通”小程序→景区购票","link":"https://japanese.beijing.gov.cn/quickguideservices/purchaseparktickets/index.html","hours":"旺季7:30-18:00，淡季7:30-17:00","rules":"可提前1-7天实名预约购票，也可现场购票；熊猫馆须购买联票","price":"门票旺季15元、淡季10元；联票旺季19元、淡季14元（含熊猫馆）","difficulty":"一般","remark":"大熊猫馆须购联票；园内北京海洋馆门票需另行购买","status":"已确认","confidence":"高","source":"https://japanese.beijing.gov.cn/quickguideservices/purchaseparktickets/index.html","links":["https://japanese.beijing.gov.cn/quickguideservices/purchaseparktickets/index.html"],"sources":["https://japanese.beijing.gov.cn/quickguideservices/purchaseparktickets/index.html"],"no":41},{"name":"国家植物园","district":"海淀区","category":"4-公园与自然景观","tags":["收费","需预约","亲子","拍照","文化","容易"],"channelType":"公众号","channelName":"国家植物园官方微信公众号","entry":"微信搜索国家植物园官方公众号→购票→选择南园/北园","link":"https://japanese.beijing.gov.cn/quickguideservices/purchaseparktickets/index.html","hours":"约6:00-20:00（南园、北园开放时间不同）","rules":"国家植物园不在“畅游公园”9家市属公园范围内，须通过其官方公众号或专属平台购票；需实名预约","price":"南园约10元、北园约5元；温室、卧佛寺、樱桃沟等另收费","difficulty":"容易","remark":"北京市官方指南明确国家植物园走其单独购票渠道，不在畅游公园平台内","status":"已确认","confidence":"中","source":"https://japanese.beijing.gov.cn/quickguideservices/purchaseparktickets/index.html","links":["https://japanese.beijing.gov.cn/quickguideservices/purchaseparktickets/index.html"],"sources":["https://japanese.beijing.gov.cn/quickguideservices/purchaseparktickets/index.html"],"no":42},{"name":"奥林匹克森林公园","district":"朝阳区","category":"4-公园与自然景观","tags":["免费","免预约","亲子","拍照","夜游","容易"],"channelType":"无需预约","channelName":"免费开放，无需预约","entry":"无需预约，免费入园；园区面积大，可自由进出","link":"https://www.beijing.gov.cn/fuwu/bmfw/sy/jrts/202512/t20251202_4315958.html","hours":"约6:00-21:00","rules":"“京通”景区购票服务平台明确：奥林匹克公园等无需预约的免费入园景区，进入后可查看景区简介、开放时间、电话、地址与游览须知","price":"免费","difficulty":"容易","remark":"免预约免费开放；与鸟巢、水立方相邻，可同日程安排","status":"已确认","confidence":"高","source":"https://www.beijing.gov.cn/fuwu/bmfw/sy/jrts/202512/t20251202_4315958.html","links":["https://www.beijing.gov.cn/fuwu/bmfw/sy/jrts/202512/t20251202_4315958.html"],"sources":["https://www.beijing.gov.cn/fuwu/bmfw/sy/jrts/202512/t20251202_4315958.html"],"no":43},{"name":"北京（通州）大运河文化旅游景区","district":"通州区","category":"4-公园与自然景观","tags":["免费","免预约","亲子","文化","小众","容易"],"channelType":"无需预约","channelName":"免费开放，无需预约","entry":"无需预约，免费入园","link":"https://www.beijing.gov.cn/fuwu/bmfw/sy/jrts/202512/t20251202_4315958.html","hours":"约6:00-22:00","rules":"“京通”平台明确列为无需预约的免费入园景区","price":"免费","difficulty":"容易","remark":"免预约免费开放；含燃灯塔、大运河森林公园等区域","status":"已确认","confidence":"高","source":"https://www.beijing.gov.cn/fuwu/bmfw/sy/jrts/202512/t20251202_4315958.html","links":["https://www.beijing.gov.cn/fuwu/bmfw/sy/jrts/202512/t20251202_4315958.html"],"sources":["https://www.beijing.gov.cn/fuwu/bmfw/sy/jrts/202512/t20251202_4315958.html"],"no":44},{"name":"雍和宫","district":"东城区","category":"5-宗教寺庙与文化场所","tags":["收费","需预约","热门","文化","一般"],"channelType":"公众号","channelName":"“雍和宫”微信公众号","entry":"微信搜索“雍和宫”公众号→门票预约→选择日期与时段","link":"https://www.beijing.gov.cn/","hours":"约9:00-16:30（随季节调整），重大宗教活动期间可能调整","rules":"需实名预约；线上每日售票有上限，初一、十五及春节等节点为全年高峰，现场通常不售当日票","price":"门票25元","difficulty":"一般","remark":"藏传佛教寺院；线上每日售票限额以官方公众号公示为准，节假日需提前抢票","status":"已确认","confidence":"中","source":"https://www.beijing.gov.cn/","links":["https://www.beijing.gov.cn/"],"sources":["https://www.beijing.gov.cn/"],"no":45},{"name":"白云观","district":"西城区","category":"5-宗教寺庙与文化场所","tags":["收费","需预约","文化","小众","容易"],"channelType":"公众号","channelName":"北京市白云观官方微信公众号","entry":"微信搜索白云观官方公众号→预约参观","link":"https://www.beijing.gov.cn/","hours":"约8:30-16:30","rules":"平时可现场购票；春节庙会期间为全年最高峰，需格外提前预约","price":"门票10元","difficulty":"容易","remark":"全真派第一丛林；春节期间庙会人流极大，预约方式以道观官方公众号为准","status":"已确认","confidence":"中","source":"https://www.beijing.gov.cn/","links":["https://www.beijing.gov.cn/"],"sources":["https://www.beijing.gov.cn/"],"no":46},{"name":"法源寺","district":"西城区","category":"5-宗教寺庙与文化场所","tags":["免费","免预约","文化","小众","容易"],"channelType":"无需预约","channelName":"免费开放，现场入寺","entry":"免费开放，无需线上预约；以寺院现场管理为准","link":"https://www.beijing.gov.cn/","hours":"约8:30-16:00","rules":"免费开放，不设线上预约；遇佛事活动可能临时调整开放区域","price":"免费","difficulty":"容易","remark":"中国佛学院所在地，丁香花期著名；入寺规则以寺院现场公示为准","status":"需核实","confidence":"低","source":"https://www.beijing.gov.cn/","links":["https://www.beijing.gov.cn/"],"sources":["https://www.beijing.gov.cn/"],"no":47},{"name":"潭柘寺","district":"门头沟区","category":"5-宗教寺庙与文化场所","tags":["收费","需预约","文化","小众","一般"],"channelType":"公众号","channelName":"潭柘寺景区官方微信公众号","entry":"微信搜索官方公众号→在线购票/预约","link":"https://www.beijing.gov.cn/","hours":"约8:00-17:00","rules":"需购票入园，建议线上预约；秋季银杏与春季玉兰为高峰","price":"门票约55元","difficulty":"一般","remark":"“先有潭柘寺，后有北京城”；票价与预约入口以景区官方公示为准","status":"需核实","confidence":"中","source":"https://www.beijing.gov.cn/","links":["https://www.beijing.gov.cn/"],"sources":["https://www.beijing.gov.cn/"],"no":48},{"name":"戒台寺","district":"门头沟区","category":"5-宗教寺庙与文化场所","tags":["收费","需预约","文化","小众","容易"],"channelType":"公众号","channelName":"戒台寺景区官方微信公众号","entry":"微信搜索官方公众号→在线购票/预约","link":"https://www.beijing.gov.cn/","hours":"约8:30-16:30","rules":"需购票入园，建议线上预约","price":"门票约45元","difficulty":"容易","remark":"与潭柘寺同属门头沟区，可一日联游；票价以景区官方公示为准","status":"需核实","confidence":"中","source":"https://www.beijing.gov.cn/","links":["https://www.beijing.gov.cn/"],"sources":["https://www.beijing.gov.cn/"],"no":49},{"name":"红螺寺","district":"怀柔区","category":"5-宗教寺庙与文化场所","tags":["收费","需预约","文化","亲子","小众","容易"],"channelType":"公众号","channelName":"红螺寺景区官方微信公众号","entry":"微信搜索官方公众号→预约购票","link":"https://www.beijing.gov.cn/","hours":"约8:00-17:00","rules":"需购票入园，旺季建议提前预约","price":"门票约54元","difficulty":"容易","remark":"位于怀柔区，银杏季与春季登山为高峰；票价以景区官方公示为准","status":"需核实","confidence":"中","source":"https://www.beijing.gov.cn/","links":["https://www.beijing.gov.cn/"],"sources":["https://www.beijing.gov.cn/"],"no":50},{"name":"孔庙和国子监博物馆","district":"东城区","category":"5-宗教寺庙与文化场所","tags":["收费","需预约","文化","小众","一般"],"channelType":"公众号+电话","channelName":"“孔庙和国子监博物馆”微信公众号 / 电话预约","entry":"微信公众号“票务服务”购票，可购当日起3日内门票（19:00更新）；当日也可现场扫码或人工窗口购票；另有电话预约010-84027224","link":"https://www.kmgzj.com/cgzn/index.aspx?nodeid=96","hours":"9:00-17:00（16:30停止入馆），全年每周一闭馆（节日期间除外）","rules":"门票30元；全日制本科、专科学生半价15元；60岁以上老人、18岁以下未成年人、现役军人、残疾人等免票；每周三设200名散客免费参观名额，须提前通过公众号“票务服务”线上申请，满额为止；当日线上线下购票截止16:30；馆方声明未授权任何第三方机构或个人代理门票","price":"成人30元；学生半价15元；未成年人及老人等免费","difficulty":"一般","remark":"每周三200个免费名额需线上抢；禁止商业拍摄（反光板、补光灯、跟拍、多套服装道具等）","status":"已确认","confidence":"高","source":"https://www.kmgzj.com/cgzn/index.aspx?nodeid=96","links":["https://www.kmgzj.com/cgzn/index.aspx?nodeid=96"],"sources":["https://www.kmgzj.com/cgzn/index.aspx?nodeid=96"],"no":51},{"name":"智化寺（北京文博交流馆）","district":"东城区","category":"5-宗教寺庙与文化场所","tags":["收费","需预约","文化","小众","容易"],"channelType":"公众号","channelName":"北京文博交流馆（智化寺）官方预约渠道","entry":"微信搜索官方渠道→预约参观；京音乐演出需另行预约","link":"https://wwj.beijing.gov.cn/","hours":"约9:00-16:30，周一闭馆","rules":"需预约购票；智化寺京音乐演出场次需单独预约","price":"门票约20元","difficulty":"容易","remark":"以明代木结构建筑与京音乐著称；预约路径以官方公示为准","status":"需核实","confidence":"低","source":"https://wwj.beijing.gov.cn/","links":["https://wwj.beijing.gov.cn/"],"sources":["https://wwj.beijing.gov.cn/"],"no":52},{"name":"大钟寺古钟博物馆","district":"海淀区","category":"5-宗教寺庙与文化场所","tags":["收费","需预约","文化","小众","容易"],"channelType":"公众号","channelName":"大钟寺古钟博物馆官方预约渠道","entry":"微信搜索官方渠道→预约参观","link":"https://wwj.beijing.gov.cn/","hours":"约9:00-16:30，周一闭馆","rules":"需预约购票；以永乐大钟与古钟陈列为主","price":"门票约20元","difficulty":"容易","remark":"预约路径以官方公示为准","status":"需核实","confidence":"低","source":"https://wwj.beijing.gov.cn/","links":["https://wwj.beijing.gov.cn/"],"sources":["https://wwj.beijing.gov.cn/"],"no":53},{"name":"国家大剧院","district":"西城区","category":"7-演出与夜游项目","tags":["收费","需购票","热门","文化","夜游","一般"],"channelType":"官网+公众号","channelName":"国家大剧院官网 / 官方微信公众号","entry":"官网→参观游览→参观购票；或官方微信公众号购票。参观票40元、半价参观票20元","link":"https://www.chncpa.org/cgyl_278/cggp/?kfType=1","hours":"参观开放时间：周二至周日及国家法定节假日9:00-17:00，周一闭馆","rules":"实行实名制购票，注册国家大剧院用户后每个证件每个入院日限购一张门票，每订单最多可预订10人；18:00后空间演出需持当日晚间演出票入场","price":"参观票40元/人，半价参观票20元/人；演出票按场次定价","difficulty":"一般","remark":"建筑与艺术展览本身即景点；免费中文定时讲解10点、14点各一场（北水下廊道）；60岁以上老人等可购半价参观票","status":"已确认","confidence":"高","source":"https://www.chncpa.org/cgyl_278/cggp/?kfType=1","links":["https://www.chncpa.org/cgyl_278/cggp/?kfType=1"],"sources":["https://www.chncpa.org/cgyl_278/cggp/?kfType=1"],"no":54},{"name":"中山公园音乐堂","district":"东城区","category":"7-演出与夜游项目","tags":["收费","需购票","文化","小众","容易"],"channelType":"官网+公众号","channelName":"中山公园音乐堂官方微信公众号 / 官网","entry":"微信搜索官方公众号→演出购票","link":"https://www.beijing.gov.cn/","hours":"按演出场次，通常19:30开演","rules":"实名购票，演出票按场次定价；进入中山公园需另购公园门票（3元）","price":"演出票约80-580元区间","difficulty":"容易","remark":"位于中山公园内，需先购买公园门票再入场；票价以官方票务页面为准","status":"已确认","confidence":"中","source":"https://www.beijing.gov.cn/","links":["https://www.beijing.gov.cn/"],"sources":["https://www.beijing.gov.cn/"],"no":55},{"name":"北京音乐厅","district":"西城区","category":"7-演出与夜游项目","tags":["收费","需购票","文化","小众","容易"],"channelType":"公众号","channelName":"北京音乐厅官方微信公众号","entry":"微信搜索官方公众号→在线购票","link":"https://www.beijing.gov.cn/","hours":"按演出场次，通常19:30开演","rules":"实名购票，按场次定价；古典音乐演出为主","price":"演出票约80-680元区间","difficulty":"容易","remark":"位于西城区北新华街；票价以官方票务页面为准","status":"已确认","confidence":"中","source":"https://www.beijing.gov.cn/","links":["https://www.beijing.gov.cn/"],"sources":["https://www.beijing.gov.cn/"],"no":56},{"name":"天桥艺术中心","district":"西城区","category":"7-演出与夜游项目","tags":["收费","需购票","文化","小众","容易"],"channelType":"公众号","channelName":"天桥艺术中心官方微信公众号","entry":"微信搜索官方公众号→演出购票","link":"https://www.beijing.gov.cn/","hours":"按演出场次","rules":"实名购票，按场次定价；话剧、音乐剧、舞剧为主","price":"演出票约100-880元区间","difficulty":"容易","remark":"票价以官方票务页面为准","status":"已确认","confidence":"中","source":"https://www.beijing.gov.cn/","links":["https://www.beijing.gov.cn/"],"sources":["https://www.beijing.gov.cn/"],"no":57},{"name":"首都剧场（北京人民艺术剧院）","district":"东城区","category":"7-演出与夜游项目","tags":["收费","需购票","热门","文化","困难"],"channelType":"公众号","channelName":"北京人民艺术剧院官方微信公众号","entry":"微信搜索官方公众号→演出购票；人艺之友会员另有优先购票安排","link":"https://www.bjrht.cn/","hours":"按演出场次，通常19:15开演","rules":"实名购票；人艺经典话剧票极为抢手，开票后迅速售罄","price":"演出票约80-680元区间","difficulty":"困难","remark":"经典剧目（如《茶馆》《雷雨》）一票难求；票价以官方票务页面为准","status":"已确认","confidence":"中","source":"https://www.bjrht.cn/","links":["https://www.bjrht.cn/"],"sources":["https://www.bjrht.cn/"],"no":58},{"name":"梅兰芳大剧院","district":"西城区","category":"7-演出与夜游项目","tags":["收费","需购票","文化","小众","容易"],"channelType":"公众号","channelName":"梅兰芳大剧院官方微信公众号","entry":"微信搜索官方公众号→在线购票","link":"https://www.beijing.gov.cn/","hours":"按演出场次","rules":"实名购票，按场次定价；国家京剧院演出主场地","price":"演出票约80-580元区间","difficulty":"容易","remark":"票价以官方票务页面为准","status":"已确认","confidence":"中","source":"https://www.beijing.gov.cn/","links":["https://www.beijing.gov.cn/"],"sources":["https://www.beijing.gov.cn/"],"no":59},{"name":"老舍茶馆","district":"西城区","category":"7-演出与夜游项目","tags":["收费","需购票","文化","夜游","亲子","容易"],"channelType":"公众号","channelName":"老舍茶馆官方微信公众号","entry":"微信搜索官方公众号→预订演出或京味茶座","link":"https://www.laoshechaguan.com/","hours":"约10:00-21:00，演出多集中在晚间","rules":"需提前预订，含茶座消费；演出票含茶水点心；京味文化体验（京剧、相声、变脸等）","price":"约180-380元区间","difficulty":"容易","remark":"票价以官方预订页为准","status":"已确认","confidence":"中","source":"https://www.laoshechaguan.com/","links":["https://www.laoshechaguan.com/"],"sources":["https://www.laoshechaguan.com/"],"no":60},{"name":"德云社（北京各剧场）","district":"西城区","category":"7-演出与夜游项目","tags":["收费","需购票","热门","文化","夜游","困难"],"channelType":"官网+公众号","channelName":"德云社官方票务平台 / 官方微信公众号","entry":"微信搜索官方公众号→演出票务→选择剧场与场次","link":"https://www.guodeyun.com/","hours":"按场次，多为晚场19:30","rules":"实名购票；热门场次开票即售罄；多个剧场（三庆园、湖广会馆等）分别售票","price":"票价约80-580元区间","difficulty":"困难","remark":"票价以官方票务页面为准；请勿通过非官方渠道购票","status":"已确认","confidence":"中","source":"https://www.guodeyun.com/","links":["https://www.guodeyun.com/"],"sources":["https://www.guodeyun.com/"],"no":61},{"name":"北京环球度假区","district":"通州区","category":"7-演出与夜游项目","tags":["收费","需购票","热门","亲子","夜游","拍照","困难"],"channelType":"官网+APP","channelName":"北京环球度假区官网 / 官方App / 官方授权合作伙伴","entry":"通过官网或官方App购票并预约入园日期；官方销售渠道及授权合作伙伴名单见官网专页","link":"https://www.universalbeijingresort.com/zh_CN/trade_partners","hours":"约9:00-20:00（随季节与活动调整）","rules":"实行实名制购票，需提前在官网或官方App预约入园日期；旺季与节假日票价浮动且可能约满；请仅通过官方销售渠道及授权合作伙伴购票","price":"淡季约418元起，旺季与节假日约528-748元区间（以官方实时票价为准）","difficulty":"困难","remark":"官网设有“官方销售渠道及授权合作伙伴”专页，请据此辨别渠道真伪","status":"已确认","confidence":"高","source":"https://www.universalbeijingresort.com/zh_CN/trade_partners","links":["https://www.universalbeijingresort.com/zh_CN/trade_partners"],"sources":["https://www.universalbeijingresort.com/zh_CN/trade_partners"],"no":62},{"name":"北京欢乐谷","district":"朝阳区","category":"7-演出与夜游项目","tags":["收费","需购票","热门","亲子","夜游","容易"],"channelType":"官网+小程序","channelName":"北京欢乐谷官网 / 官方微信小程序 / 花橙旅游","entry":"官网“网上购票”页扫码立即预订；或使用官方小程序与花橙旅游平台","link":"https://bj.happyvalley.cn/buy/huan.shtml","hours":"约9:30-22:00（季节与活动期间调整）","rules":"实名购票；实行全天一票制，不单独设置夜场票务；身高1.2米及以下或5周岁以下儿童免票，持二代、三代残疾证免票","price":"全价票299元起，青少年票260元起，儿童票与长者票195元起","difficulty":"容易","remark":"官网公示票价年度为2025年，出行前请核对当季票价；官网提醒严禁从票贩处购票，门票出园即作废","status":"已确认","confidence":"高","source":"https://bj.happyvalley.cn/buy/huan.shtml","links":["https://bj.happyvalley.cn/buy/huan.shtml"],"sources":["https://bj.happyvalley.cn/buy/huan.shtml"],"no":63},{"name":"古北水镇","district":"密云区","category":"7-演出与夜游项目","tags":["收费","需预约","热门","亲子","夜游","拍照","一般"],"channelType":"官网+公众号","channelName":"古北水镇官网 / 官方微信公众号","entry":"官网门票页直接选购大门票；或微信搜索官方公众号→预订","link":"https://m.wtown.com/phone/ticket/details_459.html","hours":"约9:00-22:00；司马台长城夜游时段另行安排","rules":"需实名预约购票，可选大门票或含司马台长城联票；住宿客人另循客栈与酒店渠道预订","price":"大门票约140元（成人票与优待票分设）","difficulty":"一般","remark":"长城夜游与温泉为特色，节假日房源与票量紧张；价格与场次以官网实时公布为准","status":"已确认","confidence":"中","source":"https://m.wtown.com/phone/ticket/details_459.html","links":["https://m.wtown.com/phone/ticket/details_459.html"],"sources":["https://m.wtown.com/phone/ticket/details_459.html"],"no":64},{"name":"北京海洋馆","district":"海淀区","category":"7-演出与夜游项目","tags":["收费","需预约","热门","亲子","一般"],"channelType":"公众号","channelName":"北京海洋馆官方微信公众号 / 官网","entry":"微信搜索官方公众号→购票预约；或访问官网购票","link":"https://www.bj-sea.com/","hours":"约9:00-17:30（随季节调整）","rules":"需实名预约购票；北京海洋馆门票与北京动物园门票分设，须分别购买","price":"约175元区间（以官方公示为准）","difficulty":"一般","remark":"位于北京动物园内，注意动物园与海洋馆门票分别购买；官网在部分网络环境访问受限，请以官方公众号实时票价为准","status":"需核实","confidence":"中","source":"https://www.bj-sea.com/","links":["https://www.bj-sea.com/"],"sources":["https://www.bj-sea.com/"],"no":65},{"name":"南锣鼓巷","district":"东城区","category":"6-胡同街区与文创园区","tags":["免费","免预约","热门","拍照","夜游","亲子","容易"],"channelType":"无需预约","channelName":"开放式街区，无需预约","entry":"开放式胡同街区，自由进出，无需预约","link":"https://www.beijing.gov.cn/","hours":"全天开放；商铺多约10:00-22:00","rules":"开放式街区，无需预约；节假日人流大时会采取限流与单向通行措施","price":"免费","difficulty":"容易","remark":"已取消预约：作为开放式街区不设预约，节假日实行人流管控","status":"已确认","confidence":"中","source":"https://www.beijing.gov.cn/","links":["https://www.beijing.gov.cn/"],"sources":["https://www.beijing.gov.cn/"],"no":66},{"name":"什刹海","district":"西城区","category":"6-胡同街区与文创园区","tags":["免费","免预约","热门","拍照","夜游","容易"],"channelType":"无需预约","channelName":"开放式街区，无需预约","entry":"开放式水域与街区，自由进出；荷花市场、烟袋斜街等均为开放区域","link":"https://www.beijing.gov.cn/","hours":"全天开放","rules":"开放式街区，无需预约；冰场、游船等体验项目单独收费","price":"免费","difficulty":"容易","remark":"免预约；冬季冰场与游船等项目需现场或线上购票","status":"已确认","confidence":"中","source":"https://www.beijing.gov.cn/","links":["https://www.beijing.gov.cn/"],"sources":["https://www.beijing.gov.cn/"],"no":67},{"name":"前门大街·大栅栏","district":"东城区","category":"6-胡同街区与文创园区","tags":["免费","免预约","热门","文化","拍照","夜游","容易"],"channelType":"无需预约","channelName":"开放式街区，无需预约","entry":"开放式商业街区，自由进出；沿街部分老字号与展馆需单独预约","link":"https://www.beijing.gov.cn/","hours":"全天开放；商铺多约10:00-22:00","rules":"开放式街区，无需预约；个别场馆（如中国铁道博物馆正阳门馆）需另行预约","price":"免费","difficulty":"容易","remark":"免预约；前门地区部分场馆需单独预约","status":"已确认","confidence":"中","source":"https://www.beijing.gov.cn/","links":["https://www.beijing.gov.cn/"],"sources":["https://www.beijing.gov.cn/"],"no":68},{"name":"798艺术区","district":"朝阳区","category":"6-胡同街区与文创园区","tags":["免费","免预约","热门","文化","拍照","容易"],"channelType":"无需预约","channelName":"园区免费开放，无需预约","entry":"园区整体免费开放、自由进出；园区内各美术馆（如UCCA尤伦斯当代艺术中心）需单独购票","link":"https://www.beijing.gov.cn/","hours":"园区全天开放；画廊多约10:00-18:00，周一闭馆","rules":"园区免费免预约；园内美术馆与画廊各自售票，营业时间与闭馆日各不相同","price":"免费","difficulty":"容易","remark":"免预约；UCCA尤伦斯当代艺术中心等机构需单独购票","status":"已确认","confidence":"中","source":"https://www.beijing.gov.cn/","links":["https://www.beijing.gov.cn/"],"sources":["https://www.beijing.gov.cn/"],"no":69},{"name":"首钢园","district":"石景山区","category":"6-胡同街区与文创园区","tags":["免费","免预约","热门","拍照","亲子","夜游","容易"],"channelType":"无需预约","channelName":"园区免费开放，无需预约","entry":"园区免费开放、自由进出；部分场馆（如首钢滑雪大跳台）需预约或购票","link":"https://www.beijing.gov.cn/","hours":"园区全天开放；场馆多约10:00-18:00","rules":"园区免费免预约；重要场馆与大型活动期间另行管控","price":"免费","difficulty":"容易","remark":"免预约；大型活动期间可能临时管控","status":"已确认","confidence":"中","source":"https://www.beijing.gov.cn/","links":["https://www.beijing.gov.cn/"],"sources":["https://www.beijing.gov.cn/"],"no":70}]};
+const DATA = PAYLOAD.records;
+const CATEGORIES = PAYLOAD.categories;
+const BUILD_TIME = '2026-09-24';
+
+const CAT_ICON = {
+  '1-皇家园林与历史古迹':'🏯','2-博物馆与展览馆':'🏛','3-科技与艺术场馆':'🎨',
+  '4-公园与自然景观':'🌳','5-宗教寺庙与文化场所':'🕌','6-胡同街区与文创园区':'🏮',
+  '7-演出与夜游项目':'🎭'
+};
+/* 难度等级排序权重（用于“预约难度”筛选排序） */
+const DIFF_WEIGHT = {'容易':0,'一般':1,'困难':2,'需提前多日':3};
+
+/* ---------- 工具 ---------- */
+function esc(s){
+  return String(s == null ? '' : s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+function hostOf(u){ try{ return new URL(u).hostname.replace(/^www\./,''); }catch(e){ return '官网'; } }
+function isFree(r){ return r.tags.indexOf('免费') > -1; }
+function needBook(r){ return r.tags.indexOf('需预约') > -1 || r.tags.indexOf('需购票') > -1; }
+function isNoBook(r){ return r.tags.indexOf('免预约') > -1; }
+function norm(s){ return String(s == null ? '' : s).toLowerCase().replace(/\s+/g,''); }
+
+/* 一级分类简称（去掉 "1-" 之类前缀） */
+function catShort(c){ return c.replace(/^\d+-/,''); }
+
+/* ---------- 统计 ---------- */
+const S = {
+  total: DATA.length,
+  confirmed: DATA.filter(r => r.status === '已确认').length,
+  need: DATA.filter(needBook).length,
+  nobook: DATA.filter(isNoBook).length,
+  verify: DATA.filter(r => r.status === '需核实').length,
+  free: DATA.filter(isFree).length
+};
+function renderStats(){
+  const items = [
+    ['s1', S.total,     '共收录景点'],
+    ['s2', S.confirmed, '已确认'],
+    ['s3', S.need,      '需预约/购票'],
+    ['s4', S.nobook,    '免预约'],
+    ['s5', S.verify,    '需核实'],
+    ['s6', S.free,      '免费景点']
+  ];
+  document.getElementById('stats').innerHTML = items.map(function(it){
+    return '<div class="stat '+it[0]+'"><span class="n">'+it[1]+'</span><span class="l">'+it[2]+'</span></div>';
+  }).join('');
+  document.getElementById('buildTime').textContent = BUILD_TIME;
+  document.getElementById('totalFoot').textContent = S.total;
+}
+
+/* ---------- 一级分类导航 ---------- */
+let activeCat = 'all';
+function renderCatNav(){
+  const counts = {};
+  DATA.forEach(function(r){ counts[r.category] = (counts[r.category]||0)+1; });
+  const html = ['<button class="catbtn'+(activeCat==='all'?' on':'')+'" type="button" data-cat="all">'
+      + '<span class="ic">📚</span>全部景点<span class="cnt">'+DATA.length+'</span></button>']
+    .concat(CATEGORIES.map(function(c){
+      return '<button class="catbtn'+(activeCat===c?' on':'')+'" type="button" data-cat="'+esc(c)+'">'
+        + '<span class="ic">'+(CAT_ICON[c]||'•')+'</span>'+esc(catShort(c))
+        + '<span class="cnt">'+(counts[c]||0)+'</span></button>';
+    })).join('');
+  document.getElementById('catnav').innerHTML = html;
+}
+
+/* ---------- 二级标签筛选 ---------- */
+const FILTER_DEFS = [
+  {id:'all',   label:'全部',       test:function(){ return true; }},
+  {id:'need',  label:'需预约/购票', test:needBook},
+  {id:'nobook',label:'免预约',     test:isNoBook},
+  {id:'free',  label:'免费',       test:isFree},
+  {id:'paid',  label:'收费',       test:function(r){ return r.tags.indexOf('收费')>-1; }},
+  {id:'热门',  label:'热门',       test:function(r){ return r.tags.indexOf('热门')>-1; }},
+  {id:'亲子',  label:'亲子',       test:function(r){ return r.tags.indexOf('亲子')>-1; }},
+  {id:'文化',  label:'文化',       test:function(r){ return r.tags.indexOf('文化')>-1; }},
+  {id:'夜游',  label:'夜游',       test:function(r){ return r.tags.indexOf('夜游')>-1; }},
+  {id:'拍照',  label:'拍照',       test:function(r){ return r.tags.indexOf('拍照')>-1; }},
+  {id:'hard',  label:'预约困难',   test:function(r){ return r.difficulty==='困难'||r.difficulty==='需提前多日'; }},
+  {id:'easy',  label:'预约容易',   test:function(r){ return r.difficulty==='容易'; }},
+  {id:'verify',label:'需核实',     test:function(r){ return r.status==='需核实'; }}
+];
+let activeFilter = 'all';
+
+function filterCount(def){
+  if(def.id === 'all') return DATA.length;
+  return DATA.filter(function(r){ return def.test(r); }).length;
+}
+function renderFilters(){
+  document.getElementById('filters').innerHTML =
+    '<span class="flabel">快捷筛选</span>' + FILTER_DEFS.map(function(f){
+      const n = filterCount(f);
+      return '<button class="chip'+(activeFilter===f.id?' on':'')+'" type="button" data-f="'+f.id+'">'
+        + esc(f.label) + '<span class="c">'+n+'</span></button>';
+    }).join('');
+}
+function matchFilter(r){
+  if(activeFilter === 'all') return true;
+  const def = FILTER_DEFS.filter(function(f){ return f.id === activeFilter; })[0];
+  return def ? def.test(r) : true;
+}
+
+/* ---------- 搜索（支持空格分隔的多关键词 AND） ---------- */
+function matchQuery(r, q){
+  if(!q) return true;
+  const hay = norm([r.name, r.district, r.category, r.tags.join(' '), r.channelType,
+    r.channelName, r.entry, r.rules, r.price, r.hours, r.remark, r.status, r.confidence,
+    r.difficulty].join(' '));
+  return q.split(/\s+/).filter(Boolean).every(function(k){ return hay.indexOf(norm(k)) > -1; });
+}
+
+/* ---------- 卡片标签 ---------- */
+function tagHTML(r){
+  const out = [];
+  out.push('<span class="tag t-ch">'+esc(r.channelType)+'</span>');
+  if(isNoBook(r)) out.push('<span class="tag t-free">免预约</span>');
+  else if(needBook(r)) out.push('<span class="tag t-need">'+(r.tags.indexOf('需购票')>-1?'需购票':'需预约')+'</span>');
+  if(isFree(r)) out.push('<span class="tag t-free">免费</span>');
+  else if(r.tags.indexOf('收费')>-1) out.push('<span class="tag t-price">收费</span>');
+  if(r.tags.indexOf('热门')>-1) out.push('<span class="tag t-pop">热门</span>');
+  if(r.tags.indexOf('小众')>-1) out.push('<span class="tag t-dim">小众</span>');
+  const cc = r.confidence==='高'?'t-conf-h':(r.confidence==='中'?'t-conf-m':'t-conf-l');
+  out.push('<span class="tag '+cc+'">置信度 '+esc(r.confidence)+'</span>');
+  if(r.status==='需核实') out.push('<span class="tag t-conf-m">需核实</span>');
+  return out.join('');
+}
+function cardClass(r){
+  if(r.status==='需核实') return 'b-verify';
+  if(isFree(r) && isNoBook(r)) return 'b-free';
+  return 'b-mid';
+}
+
+/* ---------- 卡片渲染（二级窗口） ---------- */
+function cardHTML(r){
+  return ''
+  + '<article class="card '+cardClass(r)+'" data-no="'+r.no+'" id="card-'+r.no+'">'
+  +   '<div class="head" role="button" tabindex="0" aria-expanded="false">'
+  +     '<span class="idx">'+r.no+'</span>'
+  +     '<div class="htext">'
+  +       '<div class="cname">'+esc(r.name)+'<span class="dist">'+esc(r.district)+'</span></div>'
+  +       '<div class="tags">'+tagHTML(r)+'</div>'
+  +     '</div>'
+  +     '<span class="chev">▼</span>'
+  +   '</div>'
+  +   '<div class="brief">'
+  +     '<div class="kv"><span class="k">预约渠道</span><span class="v">'+esc(r.channelName)+'</span></div>'
+  +     '<div class="kv"><span class="k">开放时间</span><span class="v">'+esc(r.hours)+'</span></div>'
+  +     '<div class="kv"><span class="k">门票价格</span><span class="v">'+esc(r.price)+'</span></div>'
+  +     '<div class="kv"><span class="k">规则摘要</span><span class="v rule">'+esc(r.rules)+'</span></div>'
+  +     '<button class="go red" type="button" data-detail="'+r.no+'">查看完整入口与详情 →</button>'
+  +   '</div>'
+  + '</article>';
+}
+
+/* ---------- 列表渲染 ---------- */
+const grid = document.getElementById('grid');
+const qInput = document.getElementById('q');
+function currentList(){
+  const q = qInput.value.trim();
+  return DATA.filter(function(r){
+    return (activeCat==='all' || r.category===activeCat) && matchFilter(r) && matchQuery(r, q);
+  });
+}
+function render(){
+  const list = currentList();
+  grid.innerHTML = list.length
+    ? list.map(cardHTML).join('')
+    : '<div class="empty"><span class="big">🔍</span>没有匹配的景点<br>试试更换关键词、切换一级分类或清除筛选条件</div>';
+  document.getElementById('shown').textContent = list.length;
+  const parts = [];
+  if(activeCat !== 'all') parts.push('分类：'+catShort(activeCat));
+  const fd = FILTER_DEFS.filter(function(f){ return f.id===activeFilter; })[0];
+  if(activeFilter !== 'all' && fd) parts.push('筛选：'+fd.label);
+  if(qInput.value.trim()) parts.push('关键词："'+qInput.value.trim()+'"');
+  document.getElementById('hint').textContent = parts.length
+    ? '已过滤 · ' + parts.join(' · ') + ' · 点击「全部景点」可恢复'
+    : '提示：点击卡片展开规则摘要，「详情」按钮查看完整入口';
+}
+
+/* ---------- 三级窗口：详情抽屉 ---------- */
+const drawer = document.getElementById('drawer');
+const scrim = document.getElementById('scrim');
+let lastFocus = null;
+
+function openDetail(no){
+  const r = DATA.filter(function(x){ return x.no === no; })[0];
+  if(!r) return;
+  lastFocus = document.activeElement;
+
+  document.getElementById('dname').textContent = r.name;
+  document.getElementById('dmeta').textContent = r.district + ' · ' + catShort(r.category)
+    + ' · 预约难度：' + r.difficulty + ' · 信息状态：' + r.status + ' · 置信度：' + r.confidence;
+  document.getElementById('dtags').innerHTML = tagHTML(r);
+
+  /* 跳转与复制按钮 */
+  const btns = [];
+  r.links.forEach(function(u, i){
+    btns.push('<a class="btn '+(i===0?'primary':'')+'" href="'+esc(u)+'" target="_blank" rel="noopener noreferrer">'
+      + '🔗 '+(i===0?'打开官方预约入口':'备用官方链接')
+      + '<span style="opacity:.78;font-size:11px">· '+esc(hostOf(u))+'</span></a>');
+  });
+  const isWechat = r.channelType.indexOf('小程序') > -1 || r.channelType.indexOf('公众号') > -1;
+  if(isWechat && r.channelName && r.channelName !== '—'){
+    /* 从渠道名称中提取第一个被引号包裹的名称作为最可能的可搜索名称 */
+    const m = r.channelName.match(/[“"]([^”"]+)[”"]/);
+    const searchName = m ? m[1] : r.channelName.split(/[\/、；;]/)[0].replace(/官方|微信|公众号|小程序|渠道|预约/g,'').trim() || r.channelName;
+    btns.push('<button class="btn wx" type="button" data-copy="'+esc(searchName)+'">'
+      + '📋 复制「'+esc(searchName)+'」→ 微信搜索</button>');
+    btns.push('<button class="btn" type="button" data-copy="'+esc(r.channelName)+'">📋 复制完整渠道名称</button>');
+  }
+  if(!r.links.length){
+    btns.push('<button class="btn" type="button" data-copy="'+esc(r.name+' 预约')+'">📋 复制「'+esc(r.name)+' 预约」→ 微信搜索</button>');
+  }
+
+  const srcs = r.sources.map(function(u, i){
+    return '<a href="'+esc(u)+'" target="_blank" rel="noopener noreferrer">来源'+(i+1)+' · '+esc(hostOf(u))+'</a>';
+  }).join('');
+
+  document.getElementById('dbody').innerHTML = ''
+  + '<div class="sec"><h3>预约入口</h3>'
+  +   '<div class="dr"><span class="k">渠道类型</span><span class="v">'+esc(r.channelType)+'</span></div>'
+  +   '<div class="dr"><span class="k">渠道名称</span><span class="v">'+esc(r.channelName)+'</span></div>'
+  +   '<div class="dr"><span class="k">入口路径</span><span class="v mono">'+esc(r.entry)+'</span></div>'
+  +   '<div class="acts">'+btns.join('')+'</div>'
+  + '</div>'
+  + '<div class="sec"><h3>参观与预约规则</h3>'
+  +   '<div class="dr"><span class="k">开放时间</span><span class="v">'+esc(r.hours)+'</span></div>'
+  +   '<div class="dr"><span class="k">门票价格</span><span class="v">'+esc(r.price)+'</span></div>'
+  +   '<div class="dr"><span class="k">预约规则</span><span class="v">'+esc(r.rules)+'</span></div>'
+  +   '<div class="dr"><span class="k">预约难度</span><span class="v">'+esc(r.difficulty)+'</span></div>'
+  + '</div>'
+  + '<div class="sec"><h3>信息状态与备注</h3>'
+  +   '<div class="dr"><span class="k">信息状态</span><span class="v'+(r.status==='需核实'?' warn':'')+'">'+esc(r.status)+'</span></div>'
+  +   '<div class="dr"><span class="k">置信度</span><span class="v'+(r.confidence==='高'?'':' warn')+'">'+esc(r.confidence)+'</span></div>'
+  +   '<div class="dr"><span class="k">备注</span><span class="v'+(r.status==='需核实'?' warn':'')+'">'+esc(r.remark)+'</span></div>'
+  + '</div>'
+  + '<div class="sec"><h3>来源链接（可溯源）</h3>'
+  +   '<div class="srcs">'+(srcs || '公开渠道未获取到官方页面链接，已标注“需核实”。')+'</div>'
+  + '</div>';
+
+  drawer.classList.add('show');
+  drawer.setAttribute('aria-hidden','false');
+  scrim.classList.add('show');
+  document.body.style.overflow = 'hidden';
+  drawer.querySelector('.dclose').focus();
+}
+function closeDetail(){
+  drawer.classList.remove('show');
+  drawer.setAttribute('aria-hidden','true');
+  scrim.classList.remove('show');
+  document.body.style.overflow = '';
+  if(lastFocus && lastFocus.focus) lastFocus.focus();
+}
+
+/* ---------- 复制 ---------- */
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toast._timer);
+  toast._timer = setTimeout(function(){ t.classList.remove('show'); }, 2600);
+}
+function copyText(text){
+  const done = function(){ toast('已复制：' + text + '　→ 请到微信「搜一搜」粘贴搜索'); };
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(done).catch(function(){ legacyCopy(text, done); });
+  }else{
+    legacyCopy(text, done);
+  }
+}
+function legacyCopy(text, done){
+  try{
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.setAttribute('readonly','');
+    ta.style.position = 'fixed';
+    ta.style.top = '-1000px';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    done();
+  }catch(err){
+    toast('复制失败，请手动输入：' + text);
+  }
+}
+
+/* ---------- 导出 ---------- */
+function download(name, text, mime){
+  const blob = new Blob(['\ufeff' + text], {type: mime});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = name;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(function(){ URL.revokeObjectURL(a.href); }, 1500);
+  toast('已导出 ' + name);
+}
+document.getElementById('exportJson').addEventListener('click', function(){
+  download('北京景点预约入口.json', JSON.stringify(DATA, null, 2), 'application/json;charset=utf-8');
+});
+document.getElementById('exportCsv').addEventListener('click', function(){
+  const cols = ['name','district','category','tags','channelType','channelName','entry',
+    'link','hours','rules','price','difficulty','remark','status','confidence','source'];
+  const head = ['景点名称','所在区域','一级分类','二级标签','渠道类型','渠道名称','入口路径',
+    '官方链接','开放时间','预约规则摘要','门票价格','预约难度','备注','信息状态','置信度','来源URL'];
+  const cell = function(v){ return '"' + String(v==null?'':v).replace(/"/g,'""') + '"'; };
+  const lines = [head.map(cell).join(',')];
+  DATA.forEach(function(r){
+    lines.push(cols.map(function(c){
+      return cell(c === 'tags' ? r.tags.join('|') : r[c]);
+    }).join(','));
+  });
+  download('北京景点预约入口.csv', lines.join('\r\n'), 'text/csv;charset=utf-8');
+});
+
+/* ---------- 事件绑定 ---------- */
+// 卡片展开 / 详情按钮（事件委托）
+grid.addEventListener('click', function(e){
+  const db = e.target.closest('[data-detail]');
+  if(db){ e.stopPropagation(); openDetail(Number(db.getAttribute('data-detail'))); return; }
+  const head = e.target.closest('.head');
+  if(head){
+    const card = head.closest('.card');
+    const open = card.classList.toggle('open');
+    head.setAttribute('aria-expanded', open ? 'true' : 'false');
+  }
+});
+grid.addEventListener('keydown', function(e){
+  if(e.key !== 'Enter' && e.key !== ' ') return;
+  const head = e.target.closest('.head');
+  if(!head) return;
+  e.preventDefault();
+  head.click();
+});
+// 详情内复制
+drawer.addEventListener('click', function(e){
+  const cb = e.target.closest('[data-copy]');
+  if(cb){ copyText(cb.getAttribute('data-copy')); return; }
+  if(e.target.closest('#dclose')) closeDetail();
+});
+scrim.addEventListener('click', closeDetail);
+document.addEventListener('keydown', function(e){
+  if(e.key === 'Escape' && drawer.classList.contains('show')) closeDetail();
+});
+// 一级分类
+document.getElementById('catnav').addEventListener('click', function(e){
+  const b = e.target.closest('.catbtn');
+  if(!b) return;
+  activeCat = b.getAttribute('data-cat');
+  renderCatNav();
+  render();
+  window.scrollTo({top:0, behavior:'smooth'});
+});
+// 二级标签筛选
+document.getElementById('filters').addEventListener('click', function(e){
+  const c = e.target.closest('.chip');
+  if(!c) return;
+  activeFilter = c.getAttribute('data-f');
+  renderFilters();
+  render();
+});
+// 搜索
+let debTimer = null;
+qInput.addEventListener('input', function(){
+  clearTimeout(debTimer);
+  debTimer = setTimeout(render, 90);
+});
+qInput.addEventListener('keydown', function(e){
+  if(e.key === 'Escape'){ qInput.value = ''; render(); }
+});
+document.getElementById('clearBtn').addEventListener('click', function(){
+  qInput.value = ''; qInput.focus(); render();
+});
+// 全部展开 / 折叠
+let allOpen = false;
+document.getElementById('toggleAll').addEventListener('click', function(e){
+  allOpen = !allOpen;
+  Array.prototype.forEach.call(document.querySelectorAll('.card'), function(c){
+    c.classList.toggle('open', allOpen);
+    const h = c.querySelector('.head');
+    if(h) h.setAttribute('aria-expanded', allOpen ? 'true' : 'false');
+  });
+  e.currentTarget.textContent = allOpen ? '全部折叠' : '全部展开';
+});
+// 回到顶部
+const toTop = document.getElementById('toTop');
+window.addEventListener('scroll', function(){
+  toTop.classList.toggle('show', window.scrollY > 480);
+}, {passive:true});
+toTop.addEventListener('click', function(){ window.scrollTo({top:0, behavior:'smooth'}); });
+
+/* ---------- 启动 ---------- */
+renderStats();
+renderCatNav();
+renderFilters();
+render();
+</script>
+</body>
+</html>

@@ -2,7 +2,8 @@
 
 北京主要旅游景点的**预约入口**汇总，构建为一个**单文件、零依赖**的交互式 HTML 页面。
 
-- 🔗 在线预览：<https://beijingattractions.netlify.app>
+- 🔗 Netlify：<https://beijingattractions.netlify.app>
+- 🔗 GitHub Pages：<https://abytrookie.github.io/beijing-booking/>
 - 📄 页面标题：**北京旅游景点预约入口汇总**
 
 ## 内容
@@ -19,16 +20,19 @@
 
 每个景点包含：所在区、类别、标签、预约渠道类型与名称、预约入口、相关链接、开放时间、参观规则、票价、预约难度、备注、核实状态与可信度等字段。
 
-## 文件说明
+## 目录结构
 
-| 文件 | 说明 |
-| --- | --- |
-| `index.html` | **构建产物**（单文件页面，可直接双击打开或部署到任意静态托管） |
-| `template.html` | 页面模板 |
-| `data.tsv` | 数据源（制表符分隔，16 字段） |
-| `build.mjs` | 校验数据并生成页面（含类别 / 标签 / 渠道白名单校验） |
-| `makedata.mjs` | 数据整理与生成脚本 |
-| `verify.mjs` | 数据校验脚本 |
+```
+.
+├── index.html                        # 主页面（构建产物，可直接打开 / 部署）
+├── template.html                     # 页面模板
+├── data.tsv                          # 数据源（制表符分隔，16 字段）
+├── build.mjs                         # 校验数据并生成页面（含类别/标签/渠道白名单校验）
+├── makedata.mjs                      # 数据整理与生成脚本
+├── verify.mjs                        # 数据校验脚本
+└── dist/
+    └── 北京旅游景点预约入口汇总.html      # 与 index.html 内容一致（构建脚本原始输出名）
+```
 
 ## 构建
 
@@ -36,7 +40,7 @@
 node build.mjs
 ```
 
-> `build.mjs` 默认输出到**上级目录**的 `北京旅游景点预约入口汇总.html`；本仓库根目录的 `index.html` 即为该构建产物。
+> `build.mjs` 默认输出到**上级目录**的 `北京旅游景点预约入口汇总.html`；仓库根目录的 `index.html` 内容与之一致，`dist/` 内保留了原始文件名版本。
 
 ## 数据字段
 
